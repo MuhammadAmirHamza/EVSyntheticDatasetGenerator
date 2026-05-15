@@ -1,0 +1,17 @@
+variable,metric,ev_sdg,user_sgd,winner
+arrival_hour,JS,0.1022,0.0034,user_sgd
+arrival_hour,KL,0.3843,0.0141,user_sgd
+arrival_hour,KS,0.3949,0.0484,user_sgd
+arrival_hour,W1,4.7405,0.3848,user_sgd
+connected_time,JS,0.0545,0.0048,user_sgd
+connected_time,KL,0.4586,0.0183,user_sgd
+connected_time,KS,0.2007,0.0245,user_sgd
+connected_time,W1,4.1324,0.4899,user_sgd
+energy,JS,0.0491,0.0007,user_sgd
+energy,KL,0.5828,0.0026,user_sgd
+energy,KS,0.1133,0.0187,user_sgd
+energy,W1,2.5677,0.3113,user_sgd
+sessions_per_day,JS,0.2677,0.013,user_sgd
+sessions_per_day,KL,2.4683,0.0549,user_sgd
+sessions_per_day,KS,0.6296,0.0489,user_sgd
+sessions_per_day,W1,27.2963,1.1609,user_sgd
