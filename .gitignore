@@ -1,0 +1,35 @@
+# =============================================================================
+# Privacy-restricted / downloaded data — DO NOT COMMIT
+# =============================================================================
+# Pecan Street (Dataport) data is license-restricted: redistribution is not
+# permitted. Ignore EVERYTHING in this folder (raw .tar.gz archives, extracted
+# CSVs, processed sessions, downloaded docs) — keep ONLY scripts and a README.
+dataset/pecanstreet/*
+!dataset/pecanstreet/*.py
+!dataset/pecanstreet/README.md
+!dataset/pecanstreet/.gitignore
+
+# Real Pecan-derived session-level data living OUTSIDE dataset/pecanstreet/.
+# Reproducible (rerun the framework / build_combined.py) — never commit.
+artifacts/pecanstreet/raw_clean.csv
+artifacts/pecanstreet/pairs.csv
+# The combined dataset embeds 2,200 real Pecan sessions; regenerate with
+# dataset/combined/build_combined.py instead of committing it.
+dataset/combined/combined_sessions.csv
+
+# =============================================================================
+# Credentials / secrets — NEVER COMMIT
+# =============================================================================
+.env
+*.env
+*credential*
+*secret*
+dataport_*.json
+
+# =============================================================================
+# Python / OS cruft
+# =============================================================================
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
