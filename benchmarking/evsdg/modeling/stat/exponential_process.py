@@ -339,6 +339,13 @@ class exponential_process:
         selector_boolan = ((np.array(self._best_fit[self.x_names[0]]) == f1))
         selector = np.where(selector_boolan.flatten())[0]
         Model = self._best_fit['Model']
+        if len(selector) == 0:
+            try:
+                avail = np.array(self._best_fit[self.x_names[0]]).flatten().astype(float)
+                idx = int(np.argmin(np.abs(avail - float(f1))))
+            except Exception:
+                idx = 0
+            return Model[idx]
         M_topop = Model[int(selector[0])]
         return M_topop
 

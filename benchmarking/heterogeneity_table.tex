@@ -1,0 +1,40 @@
+\begin{table}[t]
+\centering
+\caption{Structure the marginals miss (mean$\pm$std). $\sigma_A,\sigma_D$: across-user standard deviation (h) of each user's circular-mean arrival hour and mean duration; closest to \emph{Real} in bold. $D_{\mathrm{KL}}^{L}$: forward KL of the normalised 24\,h fleet load shape, a joint functional of $(A,D,E)$. SPARC over five seeds; baseline $\sigma$ over 30 pseudo-user partitions. The pooled baselines match the marginals (Table~\ref{tab:benchmark}) yet shrink between-user spread $3$--$6\times$.}
+\label{tab:heterogeneity}
+\begin{tabular}{llccc}
+\toprule
+Dataset & Method & $\sigma_A$ & $\sigma_D$ & $D_{\mathrm{KL}}^{L}$ \\
+\midrule
+Norway & Real & 2.03$\pm$0.00 & 5.66$\pm$0.00 & -- \\
+ & SPARC & \textbf{2.16$\pm$0.03} & \textbf{5.46$\pm$0.13} & \textbf{0.025$\pm$0.001} \\
+ & Copula & 0.32$\pm$0.02 & 0.89$\pm$0.08 & 0.049$\pm$0.001 \\
+ & GMMNet & 0.36$\pm$0.03 & 0.97$\pm$0.08 & 0.030$\pm$0.001 \\
+ & EV-SDG & 0.85$\pm$0.16 & 0.08$\pm$0.02 & 0.088$\pm$0.007 \\
+\midrule
+GIST-Res & Real & 3.61$\pm$0.00 & 1.90$\pm$0.00 & -- \\
+ & SPARC & \textbf{3.43$\pm$0.03} & \textbf{1.85$\pm$0.05} & \textbf{0.007$\pm$0.001} \\
+ & Copula & 0.44$\pm$0.07 & 0.25$\pm$0.03 & 0.054$\pm$0.008 \\
+ & GMMNet & 0.48$\pm$0.06 & 0.25$\pm$0.03 & 0.080$\pm$0.010 \\
+ & EV-SDG & 3.33$\pm$0.47 & 0.28$\pm$0.04 & 0.155$\pm$0.012 \\
+\midrule
+GIST-Comm & Real & 3.99$\pm$0.00 & 2.16$\pm$0.00 & -- \\
+ & SPARC & \textbf{4.15$\pm$0.04} & \textbf{2.15$\pm$0.03} & \textbf{0.009$\pm$0.001} \\
+ & Copula & 0.66$\pm$0.12 & 0.33$\pm$0.04 & 0.083$\pm$0.011 \\
+ & GMMNet & 1.13$\pm$0.21 & 0.31$\pm$0.04 & 0.034$\pm$0.006 \\
+ & EV-SDG & 0.63$\pm$0.12 & 0.26$\pm$0.05 & 0.364$\pm$0.008 \\
+\midrule
+ACN & Real & 1.73$\pm$0.00 & 1.62$\pm$0.00 & -- \\
+ & SPARC & 2.28$\pm$0.05 & \textbf{1.71$\pm$0.12} & \textbf{0.017$\pm$0.002} \\
+ & Copula & 0.65$\pm$0.17 & 0.37$\pm$0.06 & 0.042$\pm$0.004 \\
+ & GMMNet & 0.47$\pm$0.07 & 0.38$\pm$0.08 & 0.053$\pm$0.004 \\
+ & EV-SDG & \textbf{1.39$\pm$0.27} & 0.33$\pm$0.07 & 0.178$\pm$0.004 \\
+\midrule
+Combined & Real & 2.83$\pm$0.00 & 6.68$\pm$0.00 & -- \\
+ & SPARC & \textbf{2.86$\pm$0.04} & \textbf{6.53$\pm$0.07} & \textbf{0.019$\pm$0.001} \\
+ & Copula & 0.43$\pm$0.03 & 1.07$\pm$0.06 & 0.032$\pm$0.001 \\
+ & GMMNet & 0.48$\pm$0.04 & 1.02$\pm$0.07 & 0.038$\pm$0.002 \\
+ & EV-SDG & 1.42$\pm$0.44 & 0.06$\pm$0.02 & 0.046$\pm$0.005 \\
+\bottomrule
+\end{tabular}
+\end{table}

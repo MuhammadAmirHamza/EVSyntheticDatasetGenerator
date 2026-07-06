@@ -33,3 +33,17 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 .DS_Store
+
+# Python virtualenvs and caches (added to keep commits clean)
+.venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# Regenerable SMC/experiment artifacts (large; recreate via the scripts)
+**/raw_clean.csv
+**/pairs.csv
+**/sim_sessions.csv
+**/profiles*.jls
+**/profiles_summary.csv

@@ -34,6 +34,18 @@ GENERATORS = [
      HERE / 'evsdg' / 'results' / 'EVSDG_combined_generated.csv',
      {'arrival_hour': ['Arrival'], 'duration_h': ['Connected_time'],
       'energy_kwh': ['Energy_required']}),
+    ('GMMNet (Li et al. 2024) — cond. density + Gibbs',
+     HERE / 'gmmnet' / 'results' / 'gmmnet_combined.csv',
+     {'arrival_hour': ['arrival_hour'], 'duration_h': ['duration_h'],
+      'energy_kwh': ['energy_kwh']}),
+    ('Vine copula (semiparametric)',
+     HERE / 'copula' / 'results' / 'copula_combined.csv',
+     {'arrival_hour': ['arrival_hour'], 'duration_h': ['duration_h'],
+      'energy_kwh': ['energy_kwh']}),
+    ('TVAE (deep generative)',
+     HERE / 'ctgan' / 'results' / 'tvae_combined.csv',
+     {'arrival_hour': ['arrival_hour'], 'duration_h': ['duration_h'],
+      'energy_kwh': ['energy_kwh']}),
     # --- add baseline #2 / #3 here, e.g.: ---
     # ('Gaussian copula', HERE/'copula'/'results'/'gen.csv',
     #  {'arrival_hour':['arrival_hour'],'duration_h':['duration_h'],'energy_kwh':['energy_kwh']}),
@@ -108,7 +120,7 @@ if __name__ == '__main__':
         if m is not None:
             scores[label] = m
     if len(scores) >= 2:
-        print("\n" + "=" * 50)
-        print("MEAN KL ranking (lower = better):")
-        for lab, m in sorted(scores.items(), key=lambda kv: kv[1]):
-            print(f"  {m:7.4f}  {lab}")
+        print('\n' + '=' * 50)
+        print('MEAN KL ranking (lower = better):')
+        for lab, mk in sorted(scores.items(), key=lambda kv: kv[1]):
+            print(f'  {mk:7.4f}  {lab}')

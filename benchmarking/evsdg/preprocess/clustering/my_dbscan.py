@@ -54,6 +54,9 @@ class mydbscan:
             # Create a monthly data, generate its clusters and add them to the monthly clusters file
             month_data = self._data[self._data.Start_month == i].copy()
             month_data1 = month_data[['Start_time', "Departure_time"]]
+            if len(month_data1) == 0:
+                # No sessions in this month: skip (nothing to cluster/append).
+                continue
             if config['verbose'] > 2: print(" \t\t Clustering for month :",i)
             epsilon = self._ep
 
@@ -77,11 +80,4 @@ class mydbscan:
     def plot_clusters(self,save=False,save_name=None):
         # Used to plot the points
         y_pred = self._dbscan.fit_predict(self._data)
-        plt.scatter(self._data.iloc[:, 0], self._data.iloc[:, 1], c=y_pred, cmap='Paired',s=0.2)
-        plt.title("DBSCAN")
-        if save:
-            plt.savefig(save_name)
-        return plt
-
-
-
+        plt.scatter(self._data.iloc[:, 0], self._data.iloc[:, 1], c=y_pred, cmap='Paired', s=0.2)

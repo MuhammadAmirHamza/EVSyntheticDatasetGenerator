@@ -142,11 +142,16 @@ class mixture_optimizer():
                 m = means[comp]
                 st = std[comp]
                 samp = -1
+                _tries = 0
                 while samp <= 0 or samp > 1:
                     if self.model_type == 'normal':
                         samp = np.random.normal(loc=m, scale=st, size=1)
                     if self.model_type == 'beta':
                         samp = np.random.beta(a=m, b=st, size=1)
+                    _tries += 1
+                    if _tries >= 200:
+                        samp = np.clip(np.asarray(samp, dtype=float), 1e-3, 1.0)
+                        break
                 samples.append(samp)
         else:
             samples = np.ones(size)*0.5
@@ -368,8 +373,13 @@ class mixture_models:
             sample = model.rand_samp(size=1)
         if self._method =='EM':
             sample = -1
+            _tries = 0
             while sample <=0 or sample >=1:
                 sample = float(np.asarray(model.sample(1)[0]).flatten()[0])
+                _tries += 1
+                if _tries >= 200:
+                    sample = float(np.clip(sample, 1e-3, 1 - 1e-3))
+                    break
 
 
         return sample*self.scale

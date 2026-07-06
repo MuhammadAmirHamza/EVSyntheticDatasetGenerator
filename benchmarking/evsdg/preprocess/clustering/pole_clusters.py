@@ -53,6 +53,8 @@ def pole_clustering(ses_clust_file_path,ses_clust_file_name):
         pv1 = pole_class.pivot_poles(col='Start_time_slot')
         pv2 = pole_class.pivot_poles(col='Final_clusters')
         pv2.columns = ['Charge_point'] + ['C'+str(i) for i in range(len(pv2.columns)-1)]
+        for _c in ['C0','C1','C2']:
+            if _c not in pv2.columns: pv2[_c]=0.0
         pole_properties = reduce(lambda x,y: pd.merge(x,y, on='Charge_point', how='outer'), [pv, pv1, pv2])
 
         # Remove less than 200 samples per year
