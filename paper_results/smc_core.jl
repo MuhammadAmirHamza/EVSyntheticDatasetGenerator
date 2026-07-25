@@ -37,7 +37,7 @@ using CSV, DataFrames, Dates, Printf, Distributions, Statistics
 
 # ----- Configuration ----------------------------------------------------------
 
-const N_MIN       = 30           # minimum sessions to keep a user
+const N_MIN       = @isdefined(N_MIN_RUN) ? N_MIN_RUN : 30   # min sessions to keep a user (override via N_MIN_RUN)
 const KS_ALPHA       = 0.05         # significance level for KS and χ² tests
 const CORR_THRESHOLD = 0.3          # |r| flag for correlated bins
 const N_OBS_VAL      = 10           # min observations for validation tests

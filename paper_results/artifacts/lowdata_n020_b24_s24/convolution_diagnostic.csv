@@ -1,0 +1,3 @@
+user_id,day_type,bin,n_pairs,fallback,ks_stat,p_value,passed,r_pearson,r_spearman,correlated,rho_copula
+kim|KR_927,Weekday,24,15,1,0.2005,0.5837,true,-0.1113,-0.2643,false,
+kim|KR_422,Weekday,17,16,1,0.2162,0.4441,true,0.1453,-0.2706,false,
