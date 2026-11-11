@@ -1,0 +1,40 @@
+% =====================================================================
+% SPARC framework overview — single-column figure.
+% Generative chain S1-S4; Simulation emits population S-hat; Stage 5
+% (Validation, below Stage 4) checks it and emits a report.
+% Requires: \usetikzlibrary{arrows.meta, positioning, calc, fit, backgrounds}
+% =====================================================================
+\begin{figure}[t]
+\centering
+\resizebox{0.92\columnwidth}{!}{%
+\begin{tikzpicture}[
+  stage/.style={rectangle, rounded corners=3pt, draw, thick, fill=white,
+                minimum width=1.9cm, minimum height=1.15cm, align=center,
+                font=\footnotesize\bfseries},
+  arr/.style={-{Stealth[length=5pt, width=4pt]}, thick},
+  dlbl/.style={font=\scriptsize\bfseries\boldmath, inner sep=1.5pt},
+  io/.style={font=\footnotesize, align=center, inner sep=1.5pt},
+]
+\node[stage] (s1) at (0,0)    {Stage 1\\Data prep.};
+\node[stage] (s2) at (2.7,0)  {Stage 2\\Profile est.};
+\node[stage] (s3) at (5.4,0)  {Stage 3\\Conv. diag.};
+\node[stage] (s4) at (8.1,0)  {Stage 4\\Simulation};
+\node[stage] (s5) at (8.1,-2.2) {Stage 5\\Validation};
+\begin{scope}[on background layer]
+  \node[draw, thick, dashed, rounded corners=5pt, fill=black!3,
+        inner xsep=8pt, inner ysep=10pt, fit=(s1)(s4)(s5)] (box) {};
+\end{scope}
+\draw[arr] ($(s1.west)-(0.95,0)$) -- (s1.west) node[dlbl, above, midway]{$\mathcal{S}$};
+\draw[arr] (s1) -- (s2) node[dlbl, above, midway]{pairs};
+\draw[arr] (s2) -- (s3) node[dlbl, above, midway]{$\Theta_{u,d}$};
+\draw[arr] (s3) -- (s4) node[dlbl, above, midway]{$\tilde{\Theta}_{u,d}$};
+\node[io, right=1.0cm of s4] (pop) {$\hat{\mathcal{S}}$:\\population};
+\draw[arr] (s4.east) -- (pop.west);
+\draw[arr] (s4.south) -- (s5.north) node[dlbl, right, midway]{$\hat{\mathcal{S}}$};
+\node[io, right=1.0cm of s5] (rep) {validation\\report};
+\draw[arr] (s5.east) -- (rep.west);
+\end{tikzpicture}%
+}
+\caption{Overview of the SPARC framework. Stages~1--4 transform observed sessions $\mathcal{S}$ into a synthetic population $\hat{\mathcal{S}}$; Stage~5 validates $\hat{\mathcal{S}}$, producing a report.}
+\label{fig:framework-overview}
+\end{figure}
