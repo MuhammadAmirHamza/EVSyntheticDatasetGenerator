@@ -1,0 +1,51 @@
+% Block diagram of Stages 2 and 3 -- equal-size top-aligned stage boxes,
+% boundary-to-boundary inter-stage arrow. Requires: \usetikzlibrary{arrows.meta, backgrounds, calc}
+\begin{figure}[t]
+\centering
+\resizebox{0.92\columnwidth}{!}{%
+\begin{tikzpicture}[
+    box/.style       = {rectangle, rounded corners=3pt, thick, minimum width=3.5cm,
+                        minimum height=0.6cm, align=center, font=\scriptsize\bfseries\boldmath,
+                        draw=black, fill=white},
+    titlenode/.style = {font=\scriptsize\bfseries, text centered},
+    iobox/.style     = {box, font=\scriptsize\bfseries\boldmath, fill=black!6},
+    lbl/.style       = {font=\scriptsize\bfseries\boldmath},
+    arr/.style       = {-{Stealth[length=5pt, width=4pt]}, thick},
+]
+%% ---- equal-size, top-aligned dashed stage containers ----
+\begin{scope}[on background layer]
+  \draw[dashed, rounded corners=3pt, fill=black!2] (-2.05,0.25) rectangle (2.05,4.25);
+  \draw[dashed, rounded corners=3pt, fill=black!2] ( 3.55,0.25) rectangle (7.65,4.25);
+\end{scope}
+%% ---- Stage 2 (left): title + 4 blocks, 0.9 spacing (0.3 gaps) ----
+\node[titlenode] (s2title)   at (0,3.95) {Stage 2 --- Profile estimation};
+\node[box]       (fallback)  at (0,3.30) {Pre-compute $\Psi^d,\ \Psi^{u,d}$};
+\node[box]       (jumpchain) at (0,2.40) {Estimate $\hat{P}^{u,d},\ \hat{\pi}_0^{u,d}$};
+\node[box]       (binfit)    at (0,1.50) {Bin fitting: BIC / fallback};
+\node[box]       (assemble)  at (0,0.60) {Assemble $\Theta_{u,d}$};
+%% ---- Stage 3 (right): title + 2 blocks, centred with wider gap ----
+\node[titlenode] (s3title)  at (5.6,3.95) {Stage 3 --- Convolution diagnostic};
+\node[box]       (convtest) at (5.6,2.70) {Convolution test (KS)};
+\node[box]       (copula)   at (5.6,1.20) {Fit Gaussian copula $\hat{\rho}_b$};
+%% ---- I/O blocks, separated from the stage boxes ----
+\node[iobox] (input)  at (0,4.95)   {Enriched pairs\\[1pt] $(b_i,\, b_{i+1},\, D_i,\, G_i^{\mathrm{eff}},\, \tau_i^{\mathrm{eff}},\, A_i,\, E_i)$};
+\node[iobox] (output) at (5.6,-0.55) {Corrected profiles $\tilde{\Theta}_{u,d}$};
+%% ---- internal chains ----
+\draw[arr] (input)     -- (fallback);
+\draw[arr] (fallback)  -- (jumpchain);
+\draw[arr] (jumpchain) -- (binfit);
+\draw[arr] (binfit)    -- (assemble);
+\draw[arr] (convtest)  -- (copula);
+\draw[arr] (copula)    -- (output);
+%% ---- inter-stage arrow: boundary to boundary at box centre ----
+\draw[arr] (2.05,2.25) -- (3.55,2.25) node[lbl, midway, above]{$\Theta_{u,d}$};
+%% ---- bypasses on the outer sides ----
+\draw[arr] (convtest.east) -- ++(0.45,0)
+     |- node[lbl, right, pos=0.30]{\textit{pass}} (output.east);
+\draw[arr] (fallback.west) -- ++(-0.45,0)
+     |- node[lbl, left, pos=0.30]{\textit{fallback}} (binfit.west);
+\end{tikzpicture}%
+}
+\caption{Block diagram of Stages~2 and~3.}
+\label{fig:stages23}
+\end{figure}

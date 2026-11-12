@@ -1,0 +1,5 @@
+variable,short,KL_nats
+Arrival hour,A,0.03918
+Plug-in duration,D,0.039921
+Idle gap,G,0.059396
+Energy,E,0.040843

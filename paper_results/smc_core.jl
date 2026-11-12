@@ -95,6 +95,28 @@ raw = filter(n -> n.:user_id in top_uids, raw)
          maximum(counts.n_u[1:n_sel]),
          floor(median(counts.n_u[1:n_sel])))
 
+# ----- Occupancy filter -------------------------------------------------------
+# An entity holds at most one session at a time: a recorded session that starts
+# before an earlier (kept) session of the same entity has ended is removed.
+function drop_overlapping(df::DataFrame)
+    keep = trues(nrow(df))
+    for sub in groupby(df, :user_id)
+        rows = parentindices(sub)[1]
+        busy = DateTime(1900)
+        for k in sortperm(sub.abs_start)
+            if sub.abs_start[k] < busy
+                keep[rows[k]] = false
+            else
+                busy = sub.abs_end[k]
+            end
+        end
+    end
+    return df[keep, :]
+end
+n_before_overlap = nrow(raw)
+raw = drop_overlapping(raw)
+@printf("  Dropped (overlapping) : %d sessions\n", n_before_overlap - nrow(raw))
+
 # Save cleaned session table
 CSV.write(joinpath(ARTIFACTS_DIR, "raw_clean.csv"), raw)
 println("  Saved → artifacts/raw_clean.csv")
@@ -907,15 +929,29 @@ for uid in unique(raw.user_id)
             end
 
             # --- Sample arrival hour and energy from fitted distributions ---
+            # The state is the time-of-day bin of the session start, so the start
+            # hour is drawn from the arrival law restricted to bin b.  When the
+            # law has (almost) no mass in the bin (a fallback law of level 2 or 3),
+            # the hour is drawn from the hours observed in the bin, or uniformly
+            # in the bin when fewer than N_POOL were observed (pool_A).
+            a_lo   = BIN_WIDTH_H * (b - 1)
+            a_hi   = a_lo + BIN_WIDTH_H
             a_dist = prof.dist_A[b]
+            a      = NaN
             if a_dist !== nothing
-                a = sample_1d(a_dist)
-                a = clamp(a, 0.0, 23.99)
-            elseif !isempty(prof.pool_A[b])
-                a = rand(prof.pool_A[b])
-            else
-                a = BIN_WIDTH_H * (b - 1) + BIN_WIDTH_H * rand()
+                for _ in 1:50
+                    x = sample_1d(a_dist)
+                    if a_lo <= x < a_hi
+                        a = x
+                        break
+                    end
+                end
             end
+            if isnan(a)
+                a = !isempty(prof.pool_A[b]) ? rand(prof.pool_A[b]) :
+                                               a_lo + BIN_WIDTH_H * rand()
+            end
+            a = clamp(a, a_lo, min(a_hi, 24.0) - 1e-4)
             e_n = e_dist === nothing ? 0.01 : max(sample_1d(e_dist), 0.01)
 
             push!(sim_rows, (
@@ -938,6 +974,94 @@ for uid in unique(raw.user_id)
 end
 
 sim_df = DataFrame(sim_rows)
+
+# ----- Occupancy repair --------------------------------------------------------
+# An entity holds at most one session at a time.  The two day-type streams are
+# simulated independently and the start hour is drawn from the arrival law, so
+# a drawn session can start before the entity's previous session has ended.
+# Each entity's sessions are processed in order of start time; a session that
+# would start before the previous one ends is moved to the next day of the same
+# type, at the same hour.  Only calendar_date changes: the drawn A, D, G, E and
+# the bin are kept.  A moved session that leaves the entity's horizon is dropped.
+#   seq        : emission (chain) order, used by the L2 transition test
+#   days_moved : calendar days by which the repair moved the session
+
+session_start(d, a) = DateTime(d) + Millisecond(round(Int, a * 3_600_000.0))
+session_span(h)     = Millisecond(round(Int, h * 3_600_000.0))
+
+# sessions that start before an earlier session of the same entity has ended
+function count_overlaps(df::DataFrame)
+    n = 0
+    for sub in groupby(df, :user_id)
+        st  = session_start.(sub.calendar_date, sub.arrival_hour)
+        en  = st .+ session_span.(sub.duration_h)
+        ord = sortperm(st)
+        busy = DateTime(1900)
+        for i in ord
+            st[i] < busy && (n += 1)
+            busy = max(busy, en[i])
+        end
+    end
+    return n
+end
+
+function repair_occupancy(df::DataFrame, user_ranges)
+    start = session_start.(df.calendar_date, df.arrival_hour)
+    wknd  = df.day_type .== "Weekend"
+    keep  = trues(nrow(df))
+    rows_by_user = Dict{String, Vector{Int}}()
+    for (i, u) in enumerate(df.user_id)
+        push!(get!(rows_by_user, String(u), Int[]), i)
+    end
+    for (uid, rows) in rows_by_user
+        t1_u  = user_ranges[uid][2]
+        key   = i -> (start[i], i)
+        queue = sort(rows; by = key)
+        busy  = DateTime(1900)
+        while !isempty(queue)
+            i = popfirst!(queue)
+            if start[i] >= busy
+                busy = start[i] + session_span(df.duration_h[i])
+            else
+                d = Date(start[i]) + Day(1)
+                while (dayofweek(d) >= 6) != wknd[i]
+                    d += Day(1)
+                end
+                if d > t1_u
+                    keep[i] = false                      # left the horizon
+                    continue
+                end
+                start[i] = DateTime(d) + (start[i] - DateTime(Date(start[i])))
+                insert!(queue, searchsortedfirst(queue, i; by = key), i)
+            end
+        end
+    end
+    out = copy(df)
+    out.days_moved    = [(Date(start[i]) - df.calendar_date[i]).value for i in 1:nrow(df)]
+    out.calendar_date = Date.(start)
+    return out[keep, :]
+end
+
+n_drawn          = nrow(sim_df)
+n_overlap_before = count_overlaps(sim_df)
+sim_df.seq       = collect(1:nrow(sim_df))
+sim_df           = repair_occupancy(sim_df, user_ranges)
+n_moved          = count(>(0), sim_df.days_moved)
+n_dropped        = n_drawn - nrow(sim_df)
+n_overlap_after  = count_overlaps(sim_df)
+
+@printf("\n  Occupancy repair\n")
+@printf("    Overlapping (drawn)  : %d of %d (%.1f%%)\n",
+         n_overlap_before, n_drawn, 100 * n_overlap_before / max(n_drawn, 1))
+@printf("    Moved to a later day : %d (%.1f%%), median %d day(s)\n",
+         n_moved, 100 * n_moved / max(n_drawn, 1),
+         n_moved > 0 ? round(Int, median(sim_df.days_moved[sim_df.days_moved .> 0])) : 0)
+@printf("    Dropped past horizon : %d (%.1f%%)\n", n_dropped, 100 * n_dropped / max(n_drawn, 1))
+@printf("    Overlapping (output) : %d\n", n_overlap_after)
+
+CSV.write(joinpath(ARTIFACTS_DIR, "occupancy_repair.csv"), DataFrame(
+    n_drawn = n_drawn, n_overlap_before = n_overlap_before, n_moved = n_moved,
+    n_dropped = n_dropped, n_output = nrow(sim_df), n_overlap_after = n_overlap_after))
 
 # ----- Summary ----------------------------------------------------------------
 
@@ -1085,7 +1209,7 @@ for sub_real in groupby(pairs, [:user_id, :day_type])
     end
 
     # Simulated transition counts (Laplace smoothed)
-    sim_sorted = sort(sub_sim, :calendar_date)
+    sim_sorted = sort(sub_sim, :seq)          # chain (emission) order
     N_sim = fill(ALPHA_LAP, NUM_BINS, NUM_BINS)
     for i in 1:(nrow(sim_sorted) - 1)
         N_sim[sim_sorted.bin[i], sim_sorted.bin[i+1]] += 1.0
@@ -1237,6 +1361,35 @@ l4_results = DataFrame(
 )
 
 CSV.write(joinpath(ARTIFACTS_DIR, "validation_l4.csv"), l4_results)
+
+# ----- Output timeline: realised idle gaps -------------------------------------
+# L1-L4 above use the drawn values.  Here the idle gap is measured on the output
+# calendar (after the occupancy repair), with the same rule as Stage 1.
+function realised_gaps(df::DataFrame)
+    gaps = Float64[]
+    for sub in groupby(df, [:user_id, :day_type])
+        st  = [DateTime(d) + Millisecond(round(Int, a * 3_600_000.0))
+               for (d, a) in zip(sub.calendar_date, sub.arrival_hour)]
+        en  = [s + Millisecond(round(Int, h * 3_600_000.0)) for (s, h) in zip(st, sub.duration_h)]
+        ord = sortperm(st)
+        for k in 1:(length(ord) - 1)
+            t_end, t_next = en[ord[k]], st[ord[k + 1]]
+            t_next <= t_end && continue
+            gap = compute_g_eff(t_end, t_next, String(sub.day_type[1]))
+            gap > G_EFF_MAX_HOURS && continue
+            push!(gaps, gap)
+        end
+    end
+    return gaps
+end
+sim_gap_real = realised_gaps(sim_df)
+kl_gap_real = length(sim_gap_real) > 1 ?
+    population_kl(Float64.(pairs.G_eff), sim_gap_real) : NaN
+CSV.write(joinpath(ARTIFACTS_DIR, "validation_timeline.csv"), DataFrame(
+    variable = ["Idle gap (output timeline)"], short = ["G_real"],
+    KL_nats = [round(kl_gap_real; digits = 6)], n_pairs = [length(sim_gap_real)]))
+@printf("  Idle gap on the output timeline: KL = %.4f nats (%d pairs)\n",
+         kl_gap_real, length(sim_gap_real))
 
 # Also write the detailed arrival-hour breakdown (backward compatible)
 open(joinpath(ARTIFACTS_DIR, "kl_divergence.txt"), "w") do io

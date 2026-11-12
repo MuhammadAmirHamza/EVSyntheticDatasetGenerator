@@ -1,0 +1,594 @@
+\documentclass[journal]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, fit, backgrounds, shapes.symbols, calc}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+% --- float placement relaxation (layout only) ---
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.75}
+\renewcommand{\dbltopfraction}{0.92}
+\renewcommand{\dblfloatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\setcounter{dbltopnumber}{3}
+% --- vertical spacing tightening (layout only, no content change) ---
+\setlength{\textfloatsep}{9pt plus 2pt minus 2pt}
+\setlength{\dbltextfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\setlength{\abovedisplayskip}{5pt plus 2pt minus 2pt}
+\setlength{\belowdisplayskip}{5pt plus 2pt minus 2pt}
+\setlength{\abovedisplayshortskip}{3pt plus 2pt}
+\setlength{\belowdisplayshortskip}{3pt plus 2pt}
+% --- float-column glue: pin floats to top, small fixed gap between ---
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{6pt plus 2pt}
+\setlength{\@fpbot}{0pt plus 1fil}
+\makeatother
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{SPARC: Semi-Markov Per-Entity Charging Chains for Synthetic EV Charging-Session Data Generation}
+%Muhammad~Amir~Hamza,~Benoit~Boulet,~and~Di~Wu%
+\author{
+% \thanks{This research is funded by Flo.}%
+\thanks{M.~A.~Hamza and B.~Boulet are with the Department of Electrical and Computer Engineering, McGill University, Montreal, QC, Canada (e-mail: muhammad.hamza@mail.mcgill.ca; benoit.boulet@mcgill.ca).}%
+\thanks{D.~Wu is with the Department of Mechanical, Industrial \& Aerospace Engineering, Concordia University, Montreal, QC, Canada (e-mail: di.wu@concordia.ca).}}
+
+\markboth{IEEE Transactions on Smart Grid,~Vol.~XX, No.~XX, 2026}%
+{Hamza \MakeLowercase{\textit{et al.}}: SPARC: Per-Entity Semi-Markov EV Charging Session Generation}
+
+\maketitle
+
+\begin{abstract}
+Grid-impact studies, infrastructure planning, smart-charging design, and learning-based control require electric-vehicle (EV) charging-session data for individual entities, where an entity is a vehicle or charging point that holds at most one session at a time. Such data is scarce: operators rarely share it, and per-entity histories in open datasets are often short and of uneven length. Most existing generators model the population rather than the entity: they cannot generate sessions for specified entities and horizons, may produce overlapping sessions, and, when deep generative, require large training sets. We present SPARC, a per-entity semi-Markov framework that learns each entity's recurring charging routine from limited data. First, each entity is modeled as a semi-Markov chain over time-of-day intervals, with the sojourn time split into plug-in duration and idle gap. Second, state-wise distributions of arrival time, duration, idle gap, and energy are selected by the Bayesian information criterion, with hierarchical fallbacks for sparse states, a copula for duration--gap dependence, and a rank coupling of energy to duration. Third, a multi-stream simulator generates sessions for any subset of entities over any horizon; an entity's sessions never overlap, a property we call occupancy consistency, and a four-level protocol validates them from entity-level marginals to population distributions. On four residential, workplace, and commercial cohorts, SPARC keeps population-level divergences small and outperforms copula, deep generative, and parametric baselines on entity-level structure: it preserves the differences between entities, produces no overlapping sessions, and reproduces each entity's occupancy, weekly energy, and flexibility with rank correlations above $0.9$.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Charging behavior modeling, electric vehicle charging, load modeling, semi-Markov chains, synthetic data generation.
+\end{IEEEkeywords}
+
+\section{Introduction}
+\label{sec:introduction}
+
+
+EV charging is fast becoming one of the largest new loads on distribution grids~\cite{li2024impact}. It is also concentrated: home chargers delivered more than 65\% of the electricity used by electric light-duty vehicles worldwide in 2023, and in the United States 83\% of charging is done at home~\cite{iea2024}. At home and at work, sessions largely come from recurring units with fixed routines: a home charger and its vehicle, a commuter's vehicle at work. We call such a unit an \emph{entity}: a vehicle or charging point, identified in the data by a user or station ID, that holds at most one session at a time and is used repeatedly. A multi-port station is then a set of entities, one per charging point. When the routines of many entities coincide, they produce sharp local peaks that stress feeders and can overload distribution transformers~\cite{li2024impact}. Smart-charging design~\cite{sastry2023decentralized}, infrastructure planning, demand-response evaluation, reinforcement-learning control~\cite{xing2023bilevel}, and grid simulators and digital twins~\cite{yu2024digital} rely on session-level data, that is, plug-in times, durations, and energies, and many need it per entity. They also benefit from \emph{controllable} data: populations that can be resized, recomposed, and simulated over any horizon~\cite{powell2022}. Yet operators rarely release charging logs, which are privacy-sensitive and commercially sensitive~\cite{calearo2021, li2025trc}.
+
+\input{figures/sparc_framework_fig}
+
+\begin{table*}[t]
+\centering
+\caption{Session-level generators vs.\ properties P1--P7 (\checkmark\ satisfied, $\sim$ partial, \texttimes\ not; our assessment from the cited papers).}
+\label{tab:litreview}
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.05}
+\footnotesize
+\begin{tabular}{l l c c c c c c c}
+\toprule
+\textbf{Method} & \textbf{Technique} & \textbf{P1} & \textbf{P2} & \textbf{P3} & \textbf{P4} & \textbf{P5} & \textbf{P6} & \textbf{P7} \\
+ &  & {\scriptsize Per-entity} & {\scriptsize Depend.} & {\scriptsize Occupancy} & {\scriptsize Param.} & {\scriptsize Low-data} & {\scriptsize Cross-ctx} & {\scriptsize Config.} \\
+\midrule
+\multicolumn{9}{l}{\textit{Parametric}} \\
+Lahariya et al.~\cite{lahariya2020}            & Poisson arrivals + GMM                 & \texttimes & $\sim$     & \texttimes & \checkmark & \checkmark & \texttimes & $\sim$ \\
+\midrule
+\multicolumn{9}{l}{\textit{Non-parametric}} \\
+Chen et al.~\cite{chen2020modeling}            & Ternary kernel density estimation      & \texttimes & $\sim$     & \texttimes & \texttimes & \checkmark & \texttimes & \texttimes \\
+\midrule
+\multicolumn{9}{l}{\textit{Copula}} \\
+Einolander \& Lahdelma~\cite{einolander2021,einolander2022} & Multivariate copulas                   & \texttimes & $\sim$     & \texttimes & $\sim$     & \checkmark & \texttimes & \texttimes \\
+\midrule
+\multicolumn{9}{l}{\textit{Cluster-based}} \\
+SPEECh~\cite{powell2022}                       & Hierarchical clustering + GMM          & $\sim$     & $\sim$     & \texttimes & \checkmark & $\sim$     & \checkmark & $\sim$ \\
+Van Kriekinge et al.~\cite{vankriekinge2023}   & K-means + KDE                          & $\sim$     & $\sim$     & \texttimes & \texttimes & \checkmark & \texttimes & $\sim$ \\
+Ca{\~n}igueral et al.~\cite{canigueral2023assessment}& GMM per user profile                   & $\sim$     & $\sim$     & $\sim$     & \checkmark & \checkmark & \texttimes & $\sim$ \\
+\midrule
+\multicolumn{9}{l}{\textit{Agent-based and simulation}} \\
+SEVA~\cite{helmus2022validated}                & Per-user empirical dist. + agent sim.  & \checkmark & \checkmark & \checkmark & \texttimes & \texttimes & $\sim$     & \checkmark \\
+Zhong et al.~\cite{zhong2026time}              & Behavioral sim. + load calibration     & $\sim$     & $\sim$     & \checkmark & $\sim$     & \texttimes & \texttimes & $\sim$ \\
+\midrule
+\multicolumn{9}{l}{\textit{Deep generative}} \\
+GMMNet~\cite{li2024synthesis}                  & Conditional density nets + Gibbs       & \texttimes & $\sim$     & \texttimes & \texttimes & \texttimes & \texttimes & $\sim$ \\
+Transformer+Gibbs~\cite{li2025trc}             & Decoder Transformer + Gibbs            & \texttimes & \checkmark & \checkmark & \texttimes & \texttimes & \texttimes & $\sim$ \\
+SynthCharge~\cite{lescrauwaet2026synthcharge}  & Conditional diffusion on session grid  & $\sim$     & \checkmark & \checkmark & \texttimes & \texttimes & \texttimes & $\sim$ \\
+\midrule
+\textbf{SPARC (ours)}                          & \textbf{Per-entity semi-Markov + BIC}  & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{table*}
+Open datasets are few~\cite{calearo2021}: ACN-Data~\cite{lee2019acndata} covers workplace charging, the Norwegian data of S{\o}rensen~et~al.~\cite{sorensen2024} is one of very few residential sources, and commercial data~\cite{baek2024dataset} is rarer still. In them, per-entity histories are often short and uneven, and each dataset is one fixed realization that cannot be rescaled without copying profiles. A \emph{synthetic session generator} removes these limits, but studies that depend on individual behavior need it to be faithful at the entity level. Most generators are judged on pooled statistics~\cite{lahariya2020,einolander2021,li2024synthesis}, yet a pooled model gives every synthetic entity the same law, or one of a few cluster laws. This can distort quantities that depend on \emph{which} entity charges \emph{when}: the local peaks that size distribution assets~\cite{ranjbar2022transactive,hu2023multiload}, the demand-response potential, which varies with each station's occupancy~\cite{sobhy2025and}, the routines that smart charging~\cite{sastry2023decentralized} and learning-based control~\cite{xing2023bilevel} act on, and the digital twins of charging stations~\cite{yu2024digital}. Most pooled models also draw sessions independently, so two sessions placed on the same entity can overlap in time, which no real vehicle or charging point allows and which biases occupancy-based results such as charger utilization and vehicle-to-grid availability. Conversely, when each entity's law is reproduced, the pooled distributions follow, since they are mixtures of the entity laws (Section~\ref{sec:problem-formulation}).
+
+A generator fit for these tasks should have seven properties: \emph{per-entity modeling}~(P1), a separate model for each entity rather than a pooled average~\cite{vandermeer2024predictability}; \emph{structural dependence}~(P2), since the attributes of a session are correlated~\cite{einolander2022}, consecutive sessions are dependent~\cite{shepero2018}, and plug-in duration can correlate with the following idle gap (Section~\ref{subsec:stage3}); \emph{occupancy consistency}~(P3), meaning that sessions generated for one entity never overlap; \emph{parametric profile}~(P4), a compact set of fitted parameters that can be exchanged, inspected, and edited without the raw sessions; \emph{low data requirement}~(P5), training on session records alone, with only the few tens of sessions per entity that open datasets often provide~\cite{sorensen2024}; \emph{cross-context validation}~(P6), meaning that one model structure has been shown to work on residential, workplace, and commercial charging; and \emph{configurable simulation}~(P7), where entities can be added, removed, or rescheduled to build counterfactual scenarios~\cite{powell2022}. P1 concerns what is learned and P3 what is generated, so neither implies the other. As Table~\ref{tab:litreview} shows, none of the surveyed methods has all seven.
+
+Parametric~\cite{lahariya2020}, non-parametric~\cite{chen2020modeling}, and copula generators~\cite{einolander2021,einolander2022} fit aggregates well but sample independent sessions from one pooled density (failing~P1 and~P3). Cluster-based frameworks~\cite{powell2022,vankriekinge2023,canigueral2023assessment} group drivers into behavioral types, but the entity is lost within each cluster. Deep generative models~\cite{li2024synthesis,li2025trc,lescrauwaet2026synthcharge} capture dependence among session attributes and, in sequence models, between sessions~(P2), but train one neural network on large pooled datasets (failing~P4 and~P5). Zhong~et~al.~\cite{zhong2026time} generate non-overlapping vehicle timelines~(P3), but from vehicle attributes and behavioral rules calibrated to load targets rather than from session records (failing~P5). The closest prior work is SEVA~\cite{helmus2022validated}, an agent-based model for stress-testing public charging infrastructure in which each agent draws connection and disconnection times from its own history~(P1--P3,~P7). Its profiles, however, are raw empirical histograms: they cannot be separated from the data, and a simulated time is accepted only in a time-of-day bin where the agent was observed, so charging times absent from an agent's data are never generated (failing~P4). Training also needs the charging-network layout and repeated visits to the same charging points (failing~P5), and validation covers only daily activity patterns of public charging in four Dutch cities (partly~P6).
+
+Markov~\cite{shepero2018} and semi-Markov~\cite{rolink2013} chains have modeled vehicle fleets from mobility data to produce load, and an inhomogeneous Markov chain has described the driving pattern of one vehicle~\cite{iversen2016inhomogeneous}; to our knowledge, none has been fitted per entity to charging-session records. Other work generates charging curves and energy time series~\cite{li2024diffcharge,razghandi2023,lin2025energydiff,hu2023multiload}, simulates trip chains~\cite{tang2024modeling,xiong2026llm}, or fits parametric laws to a few residential EVs to study community load rather than sessions~\cite{wang2026identification}.
+
+This paper presents SPARC, a per-entity semi-Markov framework for synthetic EV charging sessions across residential, workplace, and commercial settings, designed to satisfy P1--P7 (Fig.~\ref{fig:framework}). It targets designated charging, in which sessions can be linked to a recurring entity: a vehicle at its home or assigned workplace point, or a single charging point. One-off public charging, whose sessions cannot be linked to an entity~\cite{jonas2023electric}, is outside its scope, and per-entity profiles are not claimed to be anonymous. The contributions are:
+\begin{enumerate}
+\item \emph{Per-entity framework.} A semi-Markov chain per entity over time-of-day intervals that preserves each entity's routine and its session-to-session structure: BIC-selected per-bin fits over four parametric families, a three-level fallback for sparse data, a duration--gap copula correction, and a duration--energy rank coupling~(P1,~P2,~P4,~P5).
+\item \emph{Simulation and validation.} A multi-stream simulator, with one stream per day type, that produces occupancy-consistent timelines for any subset of entities and any horizon~(P3,~P7), and a four-level protocol that validates them from entity-level marginals to population distributions.
+\item \emph{Cross-context evaluation.} On four cohorts from three open datasets, SPARC recovers the between-entity spread that copula, deep-generative, and parametric baselines collapse more than four-fold in duration, and it alone produces no overlapping sessions and follows each entity's occupancy, energy, and flexibility~(P3,~P6). An open-source Julia implementation is provided.
+\end{enumerate}
+
+
+\section{Preliminaries}
+\label{sec:preliminaries}
+\subsection{Charging Sessions and Notation}
+\label{subsec:session-random-object}
+The $i$th charging session is the tuple $S_i = (U_i,\, T_i^{\mathrm{start}},\, D_i,\, E_i)$: the entity identifier, the plug-in date-time, the plug-in duration $D_i > 0$ (hours), and the delivered energy $E_i > 0$ (kWh). Its end time is $T_i^{\mathrm{end}} \triangleq T_i^{\mathrm{start}} + D_i$, and its arrival hour is $A_i \triangleq \mathrm{hour}(T_i^{\mathrm{start}}) + \mathrm{minute}(T_i^{\mathrm{start}})/60 \in [0, 24)$.
+
+A calendar date $t$ has day type $\mathrm{dt}(t)$ equal to \emph{Weekday} (Mon--Fri) or \emph{Weekend} (Sat--Sun). With $B \in \mathbb{N}$ bins per day of width $w = 24/B$~hours, a session with arrival hour $A$ falls in bin
+\begin{equation}
+    b(A) \triangleq \lfloor A/w \rfloor + 1 \in \{1, 2, \ldots, B\}.
+    \label{eq:bin-index}
+\end{equation}
+The width $w$ trades temporal resolution against per-bin sample size.
+
+For an entity $u$, the sessions $\mathcal{S}_u = \{S_i : U_i = u\}$ are ordered in time, $T_1^{\mathrm{start}} < \cdots < T_{n_u}^{\mathrm{start}}$. For consecutive sessions, the inter-arrival time is $\tau_i \triangleq T_{i+1}^{\mathrm{start}} - T_i^{\mathrm{start}} > 0$ and the idle gap is $G_i \triangleq T_{i+1}^{\mathrm{start}} - T_i^{\mathrm{end}}$, so that $\tau_i = D_i + G_i$; this split into a connected part and a free part underlies the convolution diagnostic of Section~\ref{subsec:stage3}. The same interval also splits by the calendar. Let the \emph{day lag} $k_i \in \{0, 1, 2, \ldots\}$ be the number of calendar days between the two start dates ($k_i = 0$ for the same day, $k_i = 1$ for the next day). Then
+\begin{equation}
+    \tau_i = 24\,k_i + (A_{i+1} - A_i),
+    \label{eq:day-lag}
+\end{equation}
+that is, whole days plus a within-day shift of the arrival hour. A session sequence is \emph{occupancy-consistent}~(P3) if $G_i \geq 0$ for all $i$, that is, if no two sessions of the entity overlap; by~\eqref{eq:day-lag}, this is the bound $k_i \geq \lceil (D_i - A_{i+1} + A_i)/24 \rceil$.
+
+\subsection{Semi-Markov Chains}
+\label{subsec:smc-formal-def}
+
+A semi-Markov chain (SMC) keeps the Markov property at jump instants but allows arbitrary sojourn distributions~\cite{barbu2009semi}. On a finite state space $\mathcal{B} = \{1, \ldots, B\}$, a state sequence $\{X_i\} \subset \mathcal{B}$ and jump times $0 = T_0 < T_1 < \cdots$ give the piecewise-constant process $X(t) = X_i$ for $t \in [T_i, T_{i+1})$, with sojourn time $\sigma_i \triangleq T_{i+1} - T_i > 0$.
+
+\begin{definition}[Semi-Markov chain]
+\label{def:smc}
+The process $X(t)$ is a \emph{semi-Markov chain} on $\mathcal{B}$ if
+\begin{enumerate}
+    \item the embedded jump chain $\{X_i\}$ is a discrete-time Markov chain with row-stochastic transition matrix $P(b, b') = \mathbb{P}(X_{i+1} = b' \mid X_i = b)$,
+    \item given $X_i = b$ and $X_{i+1} = b'$, the sojourn $\sigma_i$ is independent of all prior history, with CDF $F_{bb'}(s) = \mathbb{P}(\sigma_i \leq s \mid X_i = b,\, X_{i+1} = b')$.
+\end{enumerate}
+\end{definition}
+
+We take the state to be the time-of-day bin of the current session, $X_i = b(A_i)$, with $b(\cdot)$ from~\eqref{eq:bin-index}. The chain then jumps at session starts, and the sojourn is the inter-arrival time, $\sigma_i = \tau_i = D_i + G_i$ (measured in effective time in Section~\ref{subsec:stage1}). Consequently $P(b, b')$, the probability that a session in bin $b$ is followed by one in bin $b'$, encodes the entity's routine directly; self-transitions, such as evening charging on consecutive days, are allowed. The SMC is characterized by $(\pi_0,\, P,\, \{F_{bb'}\})$, where $\pi_0$ is the initial distribution on $\mathcal{B}$. We adopt the standard simplification~\cite{barbu2009semi} that the sojourn depends only on the current state, $F_{bb'}(s) = F_b(s)$, which leaves $(\pi_0,\, P,\, \{F_b\}_{b \in \mathcal{B}})$, and we model $D_i$ and $G_i$ as conditionally independent given the state; Section~\ref{subsec:stage3} tests this and applies a copula correction to the bins where it fails.
+
+\begin{remark}[Alternative chains]
+\label{rem:alt-chains}
+A two-state chain $\{\text{Charging},\, \text{Idle}\}$ with sojourns $D_i$ and $G_i$ has a deterministic jump matrix, so the time of day can enter only through time-varying laws~\cite{iversen2016inhomogeneous,helmus2022validated}. A clock-driven discrete-time Markov chain can start a session before the previous one ends, which violates occupancy consistency~(P3), and a continuous-time Markov chain (CTMC) forces exponential sojourns, which the data reject (Section~\ref{sec:case-study}).
+\end{remark}
+
+\input{figures/diagram_framework}
+\input{figures/diagram_stage_23}
+
+\section{Problem Formulation}
+\label{sec:problem-formulation}
+
+Let $\mathcal{U} = \{1, 2, \ldots, N_u\}$ be a population of entities. Each entity contributes a chronologically ordered sequence of $n_u$ sessions $\mathcal{S}_u = \bigl\{(u,\, T_i^{\mathrm{start}},\, D_i,\, E_i)\bigr\}_{i=1}^{n_u}$ (Section~\ref{subsec:session-random-object}); the dataset is $\mathcal{S} = \bigcup_{u} \mathcal{S}_u$ with $n = \sum_{u} n_u$ sessions. The problem is to estimate, for each entity $u$ and day type $d$~(P1), a compact, interpretable tuple
+\begin{IEEEeqnarray}{rCl}
+    \Theta_{u,d} & = & \bigl(
+    \pi_0^{u,d},\; P^{u,d},\;
+    \{\mathcal{D}_b^{u,d}\}_{b=1}^{B},\nonumber\\
+    && \{\mathcal{G}_b^{u,d}\}_{b=1}^{B},\;
+    \{\mathcal{E}_b^{u,d}\}_{b=1}^{B},\;
+    \{\mathcal{A}_b^{u,d}\}_{b=1}^{B},\;
+    \{r_b^{u,d}\}_{b=1}^{B}
+    \bigr).
+    \label{eq:profile-tuple}
+\end{IEEEeqnarray}
+Here $\pi_0^{u,d} \in \Delta^{B-1}$ is the initial bin distribution, $P^{u,d} \in [0,1]^{B \times B}$ the row-stochastic jump matrix over bins~(P2), and $\mathcal{D}_b^{u,d}, \mathcal{G}_b^{u,d}, \mathcal{E}_b^{u,d}, \mathcal{A}_b^{u,d}$ the per-bin CDFs of plug-in duration, idle gap, energy, and arrival time, drawn from a small set of parametric families~(P4), and $r_b^{u,d} \in [-1, 1]$ the rank correlation between plug-in duration and energy. The tuple must be estimable from the few tens of sessions per entity typical of open data~(P5), with the same form across residential, workplace, and commercial settings~(P6). From $\Theta_{u,d}$, for any horizon $H > 0$ and start date $t_0$, a synthetic sequence $\hat{\mathcal{S}}_u = \bigl\{(u,\, \hat{T}_i^{\mathrm{start}},\, \hat{D}_i,\, \hat{E}_i)\bigr\}_{i=1}^{\hat{n}_u}$ is drawn that is statistically faithful to $\mathcal{S}_u$ and occupancy-consistent~(P3); the horizon, start date, and entity set are free parameters, so populations can be resized or recomposed at will~(P7), and $\hat{\mathcal{S}} = \bigcup_{u} \hat{\mathcal{S}}_u$.
+
+The framework succeeds for entity $u$ if $\hat{\mathcal{S}}_u$ passes the first three levels of the validation protocol of Section~\ref{subsec:stage5}: \emph{L1}, the marginals of $A$, $D$, $G^{\mathrm{eff}}$, and $E$; \emph{L2}, the bin-to-bin transitions; and \emph{L3}, the sojourn distribution. It succeeds for the population if \emph{L4}, the population-level KL divergence, satisfies $\mathrm{KL}_v \leq \epsilon$. This per-entity criterion is deliberately stronger than the population-level fit by which pooled generators are judged.
+
+\begin{remark}[Why a per-entity criterion]
+\label{rem:per-entity-criterion}
+A session of the population is drawn in two steps: an entity $u$, then a session from that entity's law. With $\mu_u = \mathbb{E}[X \mid u]$ for a session variable $X$,
+\begin{equation}
+    \mathrm{Var}(X) =
+    \underbrace{\mathbb{E}_u\!\left[\mathrm{Var}(X \mid u)\right]}_{\text{within-entity}}
+    + \underbrace{\mathrm{Var}_u\!\left(\mu_u\right)}_{\text{between-entity}}.
+    \label{eq:total-variance}
+\end{equation}
+A pooled generator matches the total but gives all entities one law, so the between-entity term vanishes and its share moves into the within-entity term. Passing L1--L3 per entity supports both terms, and L4 then checks their mixture; a good population fit alone does not.
+\end{remark}
+
+\section{The Proposed Framework}
+\label{sec:framework}
+
+We now present SPARC, the per-entity semi-Markov framework that solves this problem (Fig.~\ref{fig:framework-overview}). It factorizes the population by entity and day type, fitting a dedicated SMC per profile $(u,d)$ with the time-of-day state of Section~\ref{subsec:smc-formal-def}, so each profile retains its own temporal structure~(P1) and weekday/weekend shift. The framework is modular: for instance, the Stage~2 density estimator can be replaced without changing the other stages.
+
+\subsection{Stage 1: Data Preparation}
+\label{subsec:stage1}
+
+Stage~1 converts raw session records into a clean set of consecutive same-day-type session pairs. Dataset-level filtering retains a session only if its energy exceeds a threshold $E_{\min}$ (removing aborted sessions) and its plug-in duration lies within $[D_{\min},\, D_{\max}]$ (removing spurious connections and pathological outliers); sessions from atypical periods, such as pandemic lockdowns, are also excluded, since such disruptions break the routines the framework learns. Entity-level filtering retains an entity $u$ only when its session count $n_u$ is at least $n_{\min}$, the minimum for stable per-bin fitting in Stage~2; where needed, an upper cutoff $n_{\max}$, a high percentile of the session counts, trims atypically active entities. A session that starts before an earlier session of the same entity has ended is removed, so that the retained records are occupancy-consistent. All thresholds are dataset-specific (Section~\ref{sec:case-study}).
+
+For each retained entity $u$ and day type $d$, consecutive same-type sessions are sorted and paired, each pair yielding the inter-arrival $\tau_i$ and its split into plug-in duration $D_i$ and idle gap $G_i$ (Section~\ref{subsec:session-random-object}). Because the weekday and weekend processes are modeled independently, sojourns are measured in \emph{effective same-type time}, i.e.\ calendar time restricted to hours of day type $d$. The effective idle gap is $G_i^{\mathrm{eff}} \triangleq \int_{T_i^{\mathrm{end}}}^{T_{i+1}^{\mathrm{start}}} \mathbf{1}_{\{\mathrm{dt}(s) = d\}}\, \mathrm{d}s$ (hours), and the effective inter-arrival is $\tau_i^{\mathrm{eff}} \triangleq D_i + G_i^{\mathrm{eff}}$. For instance, a weekday gap spanning Friday~18:00 to Monday~09:00 contributes $G_i^{\mathrm{eff}} = 15$~hours rather than the raw $63$~hours, since the $48$ weekend hours are invisible to the weekday process. Pairs whose effective idle gap exceeds a cap $G_{\max}$ are also discarded. Stage~1 outputs, for each profile $(u, d)$, the enriched pairs $\bigl(b_i,\, b_{i+1},\, D_i,\, G_i^{\mathrm{eff}},\, \tau_i^{\mathrm{eff}},\, A_i,\, E_i\bigr)$, which feed Stage~2.
+
+\subsection{Stage 2: Profile Estimation}
+\label{subsec:stage2}
+
+From the enriched pairs, Stage~2 estimates the profile tuple $\Theta_{u,d}$ in two steps. First, the jump matrix $P^{u,d}$ and initial distribution $\pi_0^{u,d}$ are obtained directly from the observed transition counts. Second, for each bin and quantity $x \in \{D, G^{\mathrm{eff}}, E, A\}$, a candidate distribution is fit by maximum likelihood and selected by the Bayesian Information Criterion (BIC), with a hierarchical fallback for bins too sparse to fit directly.
+
+\subsubsection{Embedded jump matrix and initial distribution}
+
+We estimate $P^{u,d}$ from the observed bin-to-bin transition counts, Laplace-smoothed by a pseudo-count $\alpha$ (equivalently, the posterior mean under a symmetric $\mathrm{Dirichlet}(\alpha)$ prior):
+\begin{equation}
+    \hat{P}^{u,d}(b,\, b') =
+    \frac{N_{bb'}^{u,d} + \alpha}
+         {\displaystyle\sum_{b''=1}^{B} N_{bb''}^{u,d} + B\alpha},
+    \label{eq:jump-matrix-est}
+\end{equation}
+where $N_{bb'}^{u,d} = \sum_i \mathbf{1}_{\{b_i = b,\, b_{i+1} = b'\}}$ counts transitions from bin $b$ to bin $b'$ and $\alpha > 0$. Without smoothing, an unobserved but plausible transition would be blocked in simulation. In practice each entity occupies only a few bins, so $\hat{P}^{u,d}$ is effectively low-dimensional and estimable from a few tens of sessions~(P5).
+
+The initial bin distribution $\hat{\pi}_0^{u,d}(b)$ is estimated identically, replacing the transition counts $N_{bb'}^{u,d}$ in~\eqref{eq:jump-matrix-est} with the per-bin session counts $M_b^{u,d} = \sum_i \mathbf{1}_{\{b_i = b\}}$.
+
+
+\subsubsection{Distribution fitting and hierarchical fallback}
+
+For each bin $b$ and quantity $x \in \{D, G^{\mathrm{eff}}, E, A\}$, the marginal is chosen by BIC from a fixed candidate set: three unimodal families and a truncated Gaussian mixture,
+\begin{align}
+    \text{LogNormal}(\mu, \sigma)\!: \quad
+    &f(x) = \frac{1}{x\sigma\sqrt{2\pi}}
+    \exp\!\left(-\frac{(\ln x - \mu)^2}{2\sigma^2}\right),
+    \nonumber \\
+    \text{Exponential}(\theta)\!: \quad
+    &f(x) = \frac{1}{\theta}\, e^{-x/\theta},
+    \nonumber \\
+    \text{Weibull}(\kappa, \lambda)\!: \quad
+    &f(x) = \frac{\kappa}{\lambda}
+    \left(\frac{x}{\lambda}\right)^{\kappa-1}
+    e^{-(x/\lambda)^\kappa},
+    \nonumber \\
+    \text{Truncated GMM}\!: \quad
+    &f(x) = \sum_{j=1}^{K} w_j\,
+    \mathcal{TN}(x;\, \mu_j,\, \sigma_j^2,\, 0,\, x_{\max}),
+    \label{eq:candidate-families}
+\end{align}
+where $\mathcal{TN}(\cdot;\, \mu, \sigma^2, a, b)$ is $\mathcal{N}(\mu, \sigma^2)$ truncated to $(a, b]$, the weights satisfy $w_j > 0$ and $\sum_{j=1}^{K} w_j = 1$, and $x_{\max} = 2\max_i x_i$ is a heuristic upper bound restricting the mixture to $(0, x_{\max}]$ ($x_{\max} = 24$ for the arrival hour). The number of components $K \in \{1, 2, \ldots, K_{\max}\}$ is capped at $K \le n/2$; the mixture is fit by EM~\cite{lee2012algorithms} with truncation handled in the updates, giving $3K - 1$ free parameters. Each candidate is fit by maximum likelihood, and the one minimizing $\mathrm{BIC} = p \ln n - 2\,\ell$ is selected, where $p$ is its number of free parameters, $\ell = \sum_i \ln f(x_i)$ the maximized log-likelihood, and $n$ the sample size. Energy is fitted per bin only when it depends on the arrival bin, that is, when the correlation ratio $\eta^2$ of $E$ on the bin, computed over the dataset, reaches a threshold $\eta^2_{\min}$; otherwise one energy law per profile is used. For each energy law, the Spearman rank correlation $r$ between $D$ and $E$ is estimated from the sessions that share it when there are at least $n_{\mathrm{bin}}$ of them, and otherwise from the profile and then from the day type.
+
+
+\begin{table}[t]
+\centering
+\caption{Selected cohorts (wd = weekday-only; Profiles = (entity, day-type) models).}
+\label{tab:datasets}
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\begin{tabular}{lllllrrr}
+\toprule
+\textbf{Dataset} & \textbf{Setting} & \textbf{Reg.} & \textbf{Entity} & \textbf{Days} & \textbf{$N$} & \textbf{Sess.} & \textbf{Profiles} \\
+\midrule
+Norway~\cite{sorensen2024}   & Resid. & NO & driver  & wd+we & 100 & 22{,}839 & 199 \\
+GIST-Res~\cite{baek2024dataset}  & Resid. & KR & driver  & wd+we &  30 &  3{,}046 &  58 \\
+GIST-Comm~\cite{baek2024dataset} & Comm.  & KR & driver  & wd    &  25 &  1{,}705 &  25 \\
+ACN~\cite{lee2019acndata}        & Workpl.& US & station & wd+we &  15 &  3{,}871 &  30 \\
+\midrule
+Combined                     & Mixed  & All & mixed & wd+we & 170 & 31{,}461 & 312 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+The unimodal families cover the shapes common in EV charging data~\cite{flammini2019}, and the truncated GMM adds multimodality when BIC warrants its $3K - 1$ parameters.
+
+When a bin has too few observations to fit reliably, its fit falls back through a pre-computed cascade of increasing scope, each bin taking the finest reliable level:
+\begin{enumerate}
+    \item \emph{Local} (bin-level): the bin's own sample, used if it holds at least $n_{\mathrm{bin}}$ observations;
+    \item \emph{Pooled} (entity-level): otherwise the entity's day-type profile, i.e.\ all bins of that $(u,d)$, used if it holds at least $n_{\mathrm{pool}}$ observations; and
+    \item \emph{Global} (dataset-level): otherwise all day-type-$d$ sessions across the dataset.
+\end{enumerate}
+The pooled fits $\Psi^{u,d}$ and the global fits $\Psi^{d}$ are computed once and shared. The output of Stage~2 is the fitted profile set $\boldsymbol{\Theta} = \{\Theta_{u,d}\}_{u,d}$, passed to Stage~3.
+
+\subsection{Stage 3: Convolution Diagnostic and Distribution Update}
+\label{subsec:stage3}
+
+Under the simplification $F_{bb'} = F_b$ (Section~\ref{subsec:smc-formal-def}), the sojourn law of bin $b$ is the law of $\tau_i^{\mathrm{eff}} = D_i + G_i^{\mathrm{eff}}$. Stage~2 fits $\mathcal{D}_b$ and $\mathcal{G}_b$ separately, so independent draws reproduce this law only if it equals the convolution of the two marginals, for which $D_i \perp G_i^{\mathrm{eff}}$ given $b$ is sufficient. Stage~3 tests this per bin and, where it fails, fits a Gaussian copula for the $D$--$G$ dependence.
+
+
+
+
+
+
+\subsubsection{Convolution test}
+
+For each bin $b$ with at least $n_{\mathrm{bin}}$ pairs, we test whether the observed $\tau_i^{\mathrm{eff}}$ matches the convolution of the fitted marginals $\mathcal{D}_b$ and $\mathcal{G}_b$. We draw $N_{\mathrm{sim}}$ independent paired samples $d_k^{\mathrm{sim}} \sim \mathcal{D}_b$, $g_k^{\mathrm{sim}} \sim \mathcal{G}_b$, $\tau_k^{\mathrm{sim}} = d_k^{\mathrm{sim}} + g_k^{\mathrm{sim}}$, and compare $\{\tau_k^{\mathrm{sim}}\}$ with the empirical $\{\tau_j^{\mathrm{eff}}\}$ via the two-sample Kolmogorov--Smirnov statistic
+\begin{equation}
+    \mathrm{KS} = \sup_x \left| \hat{F}^{\mathrm{sim}}(x) - \hat{F}^{\mathrm{emp}}(x) \right|.
+    \label{eq:ks-statistic}
+\end{equation}
+The bin passes if the KS $p$-value exceeds $\alpha_{\mathrm{KS}} = 0.05$; a failing bin indicates that independent draws do not reproduce the sojourn law, and it receives the copula correction below.
+
+\begin{remark}[Physical interpretation of $D$--$G$ dependence]
+\label{rem:dg-correlation}
+Within a bin, $D$ and $G^{\mathrm{eff}}$ can depend on each other in either direction: with a fixed daily routine a longer plug-in leaves a shorter gap, whereas a long session that refills the battery can delay the next charge. Both effects are usually weak, so the copula is applied only where the test fails.
+\end{remark}
+
+
+\begin{table*}[t]
+\centering
+\caption{Four-level validation: L1--L3 per-profile pass rates (\%), L4 population KL (nats); mean$\pm$std over five seeds.}
+\label{tab:validation}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabular}{ll cccc cc cccc}
+\toprule
+\multirow{2}{*}{\textbf{Dataset}} & \multirow{2}{*}{\textbf{Entity}} & \multicolumn{4}{c}{\textbf{L1 (per-profile), \%}} & \textbf{L2} & \textbf{L3} & \multicolumn{4}{c}{\textbf{L4 (KL, nats)}} \\
+\cmidrule(lr){3-6}\cmidrule(lr){9-12}
+ & & $A$ & $D$ & $G$ & $E$ & {\footnotesize(transition)} & {\footnotesize(sojourn)} & $A$ & $D$ & $G$ & $E$ \\
+\midrule
+Norway & driver & $98.3\pm0.5$ & $91.3\pm1.0$ & $92.6\pm1.7$ & $97.2\pm1.0$ & $94.5\pm1.9$ & $85.6\pm1.1$ & 0.001 & 0.016 & 0.005 & 0.003 \\
+GIST-Res & driver & $90.6\pm2.3$ & $87.5\pm2.1$ & $89.5\pm1.1$ & $92.3\pm1.8$ & $95.3\pm1.5$ & $91.5\pm1.9$ & 0.007 & 0.017 & 0.040 & 0.014 \\
+GIST-Comm & driver & $84.0\pm2.5$ & $89.6\pm2.0$ & $97.6\pm3.2$ & $98.4\pm2.0$ & $94.4\pm4.1$ & $92.0\pm2.5$ & 0.031 & 0.041 & 0.069 & 0.037 \\
+ACN & station & $100.0\pm0.0$ & $98.0\pm1.6$ & $97.3\pm2.5$ & $97.3\pm2.5$ & $94.0\pm2.5$ & $96.7\pm2.1$ & 0.008 & 0.008 & 0.008 & 0.063 \\
+\midrule
+Combined & mixed & $96.9\pm0.5$ & $89.6\pm0.6$ & $89.7\pm0.7$ & $96.5\pm0.7$ & $95.4\pm0.6$ & $85.5\pm0.8$ & 0.001 & 0.011 & 0.005 & 0.004 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsubsection{Distribution update for failing bins}
+
+For bins that fail the convolution test, we couple $D$ and $G^{\mathrm{eff}}$ with a copula while preserving the Stage-2 marginals. In principle any copula family applies; we use a Gaussian copula~\cite{nelsen2006introduction} for its single interpretable parameter and closed-form sampling. The per-bin observations are first mapped to approximate standard normals by the probability integral transform, $z_{d,i} = \Phi^{-1}(\mathcal{D}_b(d_i))$ and $z_{g,i} = \Phi^{-1}(\mathcal{G}_b(g_i))$, where $\Phi^{-1}$ is the standard normal quantile function, and the latent correlation is estimated as $\hat{\rho}_b = \widehat{\mathrm{corr}}(z_d, z_g)$. The implementation estimates $\hat{\rho}_b$ when both marginals are unimodal families; a failing bin with a mixture marginal keeps independent draws. In simulation, a pair $(z_d, z_g)$ is drawn from the bivariate standard normal with correlation $\hat{\rho}_b$ and back-transformed via $d = \mathcal{D}_b^{-1}(\Phi(z_d))$ and $g = \mathcal{G}_b^{-1}(\Phi(z_g))$.
+The output of Stage~3 is the corrected profile $\tilde{\Theta}_{u,d}$, identical to $\Theta_{u,d}$ except that failing bins carry the fitted $\hat{\rho}_b$ for use in Stage~4. The block diagram of Stage~2 and Stage~3 is shown in Fig.~\ref{fig:stages23}.
+
+\begin{remark}[Which dependences are corrected]
+\label{rem:which-dependence}
+Only the $D$--$G^{\mathrm{eff}}$ pair is coupled by a copula, because only these two enter the sojourn $\tau^{\mathrm{eff}} = D + G^{\mathrm{eff}}$ that moves the chain forward in time. Energy does not enter the sojourn, so its dependence on duration is restored after the draw by the rank coupling of Stage~4, which changes neither marginal. Arrival $A$ is drawn from its own per-bin distribution; conditioning on the time-of-day bin absorbs much of the dependence of $D$ and $E$ on the hour of the day, but their dependence on $A$ within a bin is not modeled. A richer joint over $(A, D, G^{\mathrm{eff}}, E)$, e.g.\ a vine copula within the same modular Stage~3, is future work.
+\end{remark}
+
+
+\subsection{Stage 4: Simulation}
+\label{subsec:stage4}
+
+Stage~4 draws synthetic sessions from the corrected profiles $\tilde{\boldsymbol{\Theta}}$. For each entity $u$ and day type $d$, the chain runs on an effective-time clock over a horizon $H$ from an anchor date $t_0$. The horizon and anchor are configurable per entity, supporting historical replay, a common horizon, or counterfactual future scenarios~(P7). Per entity and day type, the stream starts at $b \sim \hat{\pi}_0^{u,d}$ and repeats until the same-type budget is exhausted: draw $D \sim \mathcal{D}_b$ and $G \sim \mathcal{G}_b(\cdot \mid D)$, advance the effective clock by $D + G$, map to calendar time via $\Phi_d$, draw $E \sim \mathcal{E}_b$ and $A \sim \mathcal{A}_b$, emit the session, and jump to $b' \sim P^{u,d}(b, \cdot)$; the weekday and weekend streams run on separate clocks and are merged into $\hat{\mathcal{S}}_u$. Within each stream, the drawn energies that share an energy law are then reordered against the durations by rank~\cite{iman1982distribution}, using Gaussian scores with correlation $2\sin(\pi r/6)$, which yields rank correlation $r$; the set of drawn energies, and hence every energy marginal, is unchanged. In the merged stream, a session that would start before the entity's previous session has ended is moved to the next day of the same type, at the same hour, and dropped if that day lies beyond the horizon, which enforces occupancy consistency~(P3).
+
+
+Here the conditional draw $\mathcal{G}_b(\cdot \mid D)$ reduces to the marginal $\mathcal{G}_b$ for bins without a fitted $\hat{\rho}_b$ and uses the copula otherwise, and the effective-to-calendar map $\Phi_d(t^{\mathrm{eff}}, t_0)$ returns the smallest calendar time $t \geq t_0$ at which exactly $t^{\mathrm{eff}}$ hours of day-type $d$ have elapsed since $t_0$. The division of labor is deliberate: the effective clock and $\Phi_d$ fix the calendar \emph{day} of each session, that is, the day lag $k_i$ of~\eqref{eq:day-lag}, while its time of day is drawn from the bin's arrival law $\mathcal{A}_b$, restricted to bin $b$.
+
+\emph{Worked example.} Let $w = 2$~h ($B = 12$), anchor $t_0 = $ Monday 00:00, weekday stream, effective clock at $t^{\mathrm{eff}} = 97.0$~h, current state $b = 9$ (the $[16{:}00, 18{:}00)$ bin). One simulation step: (i)~draw $D = 12.4$~h from $\mathcal{D}_9$; bin~9 failed Stage~3 with $\hat{\rho}_9 = 0.42$, so $G = 21.1$~h is drawn from the copula conditional $\mathcal{G}_9(\cdot \mid D)$; (ii)~advance the clock by $\tau^{\mathrm{eff}} = D + G = 33.5$~h to $t^{\mathrm{eff}} = 130.5$~h; (iii)~map to calendar: the first $120$ weekday-hours exhaust Monday--Friday, so the residual $10.5$~h lands on the \emph{following} Monday at 10:30, the weekend being invisible to the weekday clock; (iv)~draw $E = 8.6$~kWh from $\mathcal{E}_9$ and $A = 17.3$ from $\mathcal{A}_9$, so the session starts that Monday at 17:18 and runs $12.4$~h; (v)~jump to $b' \sim P^{u,\mathrm{wd}}(9, \cdot)$, here the self-transition of an evening routine.
+
+\subsection{Stage 5: Validation}
+\label{subsec:stage5}
+
+Stage~5 evaluates $\hat{\mathcal{S}}$ against the real sessions using the four-level hierarchical protocol of Section~\ref{sec:problem-formulation}, built on standard two-sample tests. A profile is included in reporting only if it has at least $n_{\mathrm{obs}}$ sessions in both the real and simulated sets.
+
+\emph{L1: Marginal distributions.} For each profile $(u,d)$ and each variable $v \in \{A, D, G^{\mathrm{eff}}, E\}$, a two-sample KS test~\eqref{eq:ks-statistic} compares the real and simulated marginals, passing if the $p$-value exceeds $\alpha_{\mathrm{KS}} = 0.05$.
+
+\emph{L2: Transition matrix.} The bin-to-bin transition structure of each profile $(u,d)$ is tested via a Pearson $\chi^2$ test. Both the real and simulated count matrices are Laplace-smoothed with the pseudo-count $\alpha$ of~\eqref{eq:jump-matrix-est} before testing. For each source bin $b$, the expected count under the real row-normalized transition probabilities is $\bar{N}_{bb'} = \hat{P}^{\mathrm{real}}(b, b') \cdot \sum_{b''} N_{bb''}^{\mathrm{sim}}$, and the test statistic is
+\begin{equation}
+    \chi^2 = \sum_{\substack{b,\, b':\\ \bar{N}_{bb'} \geq 0.5}}
+    \frac{\left(N_{bb'}^{\mathrm{sim}} - \bar{N}_{bb'}\right)^2}
+         {\bar{N}_{bb'}}.
+    \label{eq:l2-chi2}
+\end{equation}
+Cells with $\bar{N}_{bb'} < 0.5$ are excluded so that near-empty cells do not inflate the statistic. The $p$-value is obtained by Monte Carlo: null transition counts are drawn from the real row probabilities with the simulated row totals, and the $p$-value is the share of null statistics at least as large as the observed one; the profile passes if it exceeds $\alpha_{\mathrm{KS}}$.
+
+\emph{L3: Sojourn time distribution.} For each profile $(u, d)$, a two-sample KS test~\eqref{eq:ks-statistic} compares the real $\tau_i^{\mathrm{eff}}$ distribution against the simulated sojourns, passing if the $p$-value exceeds $\alpha_{\mathrm{KS}}$. This directly tests the fitted sojourn model and is unaffected by any mismatch between the simulated horizon $H$ and the real observation window.
+
+\emph{L4: Population-level distributions.} All sessions from $\hat{\mathcal{S}}$ and $\mathcal{S}$ are compared at the population level for each variable $v \in \{A, D, G^{\mathrm{eff}}, E\}$. Arrival hours are binned into 24 clock-hour bins; the remaining variables are binned into 50 equal-width bins with Laplace smoothing. Each pair of histograms is normalized to probability mass functions $P_v^{\mathrm{real}}$ and $P_v^{\mathrm{sim}}$, and the KL divergence is computed as
+\begin{equation}
+    \mathrm{KL}_v(P_v^{\mathrm{real}} \| P_v^{\mathrm{sim}}) =
+    \sum_{k} P_v^{\mathrm{real}}(k)
+    \ln \frac{P_v^{\mathrm{real}}(k) + \delta}
+             {P_v^{\mathrm{sim}}(k) + \delta},
+    \label{eq:kl-l4}
+\end{equation}
+where $\delta = 10^{-9}$. We read $\mathrm{KL}_v$ below $0.05$~nats as excellent agreement, $0.05$--$0.15$~nats as acceptable, and above $0.15$~nats as a significant discrepancy, and therefore set the L4 tolerance $\epsilon = 0.15$~nats. Distance-based evaluation of synthetic smart-grid data is an active research direction in its own right~\cite{cai2026frechet}; Section~\ref{subsec:validation-results} reports such distances alongside the tests.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Case Study}
+\label{sec:case-study}
+
+
+
+
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.86\textwidth]{figures_de/fig_marginals_grid.pdf}
+  \caption{Population marginals, real (gray) vs.\ simulated (blue): arrival and duration (density); idle gap and energy (CDF).}
+  \label{fig:marginals}
+\end{figure*}
+
+\begin{table}[t]
+\centering
+\caption{Aggregate marginal fidelity: forward KL (nats), mean$\pm$std; best per column in bold.}
+\label{tab:benchmark}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabular}{llccc}
+\toprule
+Dataset & Method & $A$ & $D$ & $E$ \\
+\midrule
+Norway & SPARC & \textbf{0.001$\pm$0.000} & 0.021$\pm$0.001 & 0.002$\pm$0.000 \\
+ & Copula & \textbf{0.001$\pm$0.000} & \textbf{0.001$\pm$0.000} & \textbf{0.001$\pm$0.000} \\
+ & GMMNet & 0.019$\pm$0.001 & 0.080$\pm$0.003 & 0.043$\pm$0.002 \\
+ & EV-SDG & 0.162$\pm$0.007 & 17.9$\pm$0.0 & 2.357$\pm$0.005 \\
+\midrule
+GIST-Res & SPARC & \textbf{0.007$\pm$0.001} & 0.021$\pm$0.002 & 0.012$\pm$0.003 \\
+ & Copula & 0.012$\pm$0.009 & \textbf{0.012$\pm$0.007} & \textbf{0.011$\pm$0.003} \\
+ & GMMNet & 0.065$\pm$0.008 & 0.049$\pm$0.006 & 0.055$\pm$0.010 \\
+ & EV-SDG & 0.397$\pm$0.024 & 0.129$\pm$0.009 & 4.199$\pm$0.036 \\
+\midrule
+GIST-Comm & SPARC & \textbf{0.031$\pm$0.007} & 0.033$\pm$0.003 & 0.029$\pm$0.003 \\
+ & Copula & 0.035$\pm$0.023 & \textbf{0.015$\pm$0.003} & \textbf{0.013$\pm$0.003} \\
+ & GMMNet & 0.155$\pm$0.013 & 0.198$\pm$0.047 & 0.123$\pm$0.011 \\
+ & EV-SDG & 0.838$\pm$0.019 & 0.260$\pm$0.010 & 6.078$\pm$0.004 \\
+\midrule
+ACN & SPARC & 0.008$\pm$0.001 & \textbf{0.024$\pm$0.011} & 0.082$\pm$0.017 \\
+ & Copula & \textbf{0.006$\pm$0.005} & 0.027$\pm$0.016 & 0.075$\pm$0.015 \\
+ & GMMNet & 0.085$\pm$0.007 & 0.033$\pm$0.014 & \textbf{0.057$\pm$0.011} \\
+ & EV-SDG & 0.391$\pm$0.007 & 0.160$\pm$0.004 & 0.432$\pm$0.005 \\
+\midrule
+Combined & SPARC & \textbf{0.001$\pm$0.000} & 0.015$\pm$0.001 & 0.003$\pm$0.000 \\
+ & Copula & \textbf{0.001$\pm$0.000} & \textbf{0.001$\pm$0.000} & \textbf{0.001$\pm$0.000} \\
+ & GMMNet & 0.012$\pm$0.001 & 0.024$\pm$0.001 & 0.018$\pm$0.001 \\
+ & EV-SDG & 0.173$\pm$0.011 & 13.3$\pm$0.6 & 2.335$\pm$0.006 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{table}[t]
+\centering
+\caption{Structure the marginals miss: across-entity SD (h) of mean arrival hour and duration (closest to \emph{Real} in bold); KL of the 24\,h load shape.}
+\label{tab:heterogeneity}
+\footnotesize
+\begin{tabular}{llccc}
+\toprule
+Dataset & Method & $\sigma_A$ & $\sigma_D$ & $D_{\mathrm{KL}}^{L}$ \\
+\midrule
+Norway & Real & 2.03$\pm$0.00 & 5.67$\pm$0.00 & -- \\
+ & SPARC & \textbf{2.06$\pm$0.04} & \textbf{5.59$\pm$0.25} & \textbf{0.011$\pm$0.001} \\
+ & Copula & 0.32$\pm$0.02 & 0.89$\pm$0.08 & 0.049$\pm$0.001 \\
+ & GMMNet & 0.36$\pm$0.03 & 0.97$\pm$0.08 & 0.030$\pm$0.001 \\
+ & EV-SDG & 0.85$\pm$0.16 & 0.08$\pm$0.02 & 0.088$\pm$0.007 \\
+\midrule
+GIST-Res & Real & 3.61$\pm$0.00 & 1.90$\pm$0.00 & -- \\
+ & SPARC & \textbf{3.66$\pm$0.08} & \textbf{1.83$\pm$0.02} & \textbf{0.002$\pm$0.000} \\
+ & Copula & 0.44$\pm$0.07 & 0.25$\pm$0.03 & 0.054$\pm$0.008 \\
+ & GMMNet & 0.48$\pm$0.06 & 0.25$\pm$0.03 & 0.080$\pm$0.010 \\
+ & EV-SDG & 3.33$\pm$0.47 & 0.28$\pm$0.04 & 0.155$\pm$0.012 \\
+\midrule
+GIST-Comm & Real & 4.00$\pm$0.00 & 2.16$\pm$0.00 & -- \\
+ & SPARC & \textbf{4.17$\pm$0.13} & \textbf{2.15$\pm$0.04} & \textbf{0.009$\pm$0.001} \\
+ & Copula & 0.66$\pm$0.12 & 0.33$\pm$0.04 & 0.083$\pm$0.011 \\
+ & GMMNet & 1.13$\pm$0.21 & 0.31$\pm$0.04 & 0.034$\pm$0.006 \\
+ & EV-SDG & 0.63$\pm$0.12 & 0.26$\pm$0.05 & 0.364$\pm$0.008 \\
+\midrule
+ACN & Real & 1.73$\pm$0.00 & 1.62$\pm$0.00 & -- \\
+ & SPARC & \textbf{1.80$\pm$0.08} & \textbf{1.70$\pm$0.20} & \textbf{0.007$\pm$0.001} \\
+ & Copula & 0.65$\pm$0.17 & 0.37$\pm$0.06 & 0.042$\pm$0.004 \\
+ & GMMNet & 0.47$\pm$0.07 & 0.38$\pm$0.08 & 0.053$\pm$0.004 \\
+ & EV-SDG & 1.39$\pm$0.27 & 0.33$\pm$0.07 & 0.178$\pm$0.004 \\
+\midrule
+Combined & Real & 2.83$\pm$0.00 & 6.69$\pm$0.00 & -- \\
+ & SPARC & \textbf{2.84$\pm$0.04} & \textbf{6.59$\pm$0.05} & \textbf{0.008$\pm$0.000} \\
+ & Copula & 0.43$\pm$0.03 & 1.07$\pm$0.06 & 0.032$\pm$0.001 \\
+ & GMMNet & 0.48$\pm$0.04 & 1.02$\pm$0.07 & 0.038$\pm$0.002 \\
+ & EV-SDG & 1.42$\pm$0.44 & 0.06$\pm$0.02 & 0.046$\pm$0.005 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Datasets and Setup}
+\label{subsec:dataset}
+
+
+We evaluate SPARC on four cohorts from three open datasets, spanning residential, workplace, and commercial settings. Two come from one large Korean network~\cite{baek2024dataset}, at its residential (GIST-Res) and commercial (GIST-Comm) sites, a same-metering comparison across settings; an unrelated Norwegian residential dataset~\cite{sorensen2024} rules out operator effects. The ACN workplace dataset~\cite{lee2019acndata} is keyed on the \emph{charging station}: SPARC models any repeat-charging entity uniformly. Its timestamps are in UTC, seven to eight hours ahead of local time.
+
+All cohorts share the Stage~1 preparation of Section~\ref{subsec:stage1}: quality filters ($E_i > 0.5$~kWh, $D_i \in [2~\text{min},\, 120~\text{h}]$) drop aborted and spurious sessions, sessions that overlap an earlier session of the same entity are removed ($0.2\%$ of the combined pool), and consecutive same-day-type sessions are paired, discarding pairs whose effective idle gap exceeds $G_{\max} = 10$~days ($5$~days for GIST-Comm). GIST-Comm, being weekday-dominated, is modeled on weekdays only; in the other cohorts a weekend profile is built wherever weekend sessions exist.
+
+Per-entity data is scarce and uneven, so each cohort retains a dataset-specific number of recurring entities with sufficient history for stable fitting (Table~\ref{tab:datasets}); irregular entities are also dropped (top-$2\%$ session-count outliers for Norway and GIST-Res, non-location-loyal drivers for GIST-Comm). The \emph{combined} pool merges all four cohorts into $170$ entities ($155$ drivers, $15$ stations), a cross-context, cross-entity stress test.
+
+The coefficient of variation $\sigma_{\tau}/\mu_{\tau}$ of the per-profile sojourn equals $1$ under the exponential a CTMC assumes; across the $307$ combined-pool profiles with at least ten pairs, $80\%$ have a coefficient outside $[0.9,\, 1.1]$ (median $0.81$), predominantly sub-exponential, justifying the arbitrary $F_b$.
+
+SPARC is implemented in Julia (\texttt{TruncatedGaussianMixtures.jl} for the mixtures, \texttt{HypothesisTests.jl} for the tests). The arrival-hour resolution is per dataset ($B = 12$ two-hour bins for Norway and ACN, $B = 24$ one-hour bins for the Korean cohorts and the combined pool), with $\alpha = 10^{-4}$, $n_{\min} = 30$, $n_{\mathrm{bin}} = n_{\mathrm{pool}} = 15$, $\eta^2_{\min} = 0.10$, $N_{\mathrm{sim}} = 10^4$, and $n_{\mathrm{obs}} = 10$; the mixtures use $K_{\max} = 3$ for $D$ and $E$, $6$ for $G^{\mathrm{eff}}$, and $3$ or $6$ for $A$; each entity is simulated over its own observation window (up to four years), all tabulated metrics average five seeds, and the figures show one seed.
+
+\subsection{Four-Level Validation}
+\label{subsec:validation-results}
+
+Table~\ref{tab:validation} reports the four-level protocol (mean\,$\pm$\,std over five seeds): every L1--L3 pass rate is at least $84\%$ and every L4 stays at or below $0.07$~nats. Fig.~\ref{fig:marginals} overlays the population marginals: the arrival-hour rhythms (residential evening, workplace morning, commercial midday) and multimodal durations are reproduced, and the idle-gap and energy CDFs are visually indistinguishable. The hierarchical fallback fits every profile even under sparse data (P5), and mean sessions per active day are within $10\%$ of the real values (Fig.~\ref{fig:downstream}a).
+L1--L4 use the drawn values. On the output calendar, where the occupancy repair of Stage~4 has moved $5$--$42\%$ of the sessions to a later day (fewest for GIST-Comm, most for the multi-session ACN stations), the idle-gap divergence is between $0.025$ and $0.056$~nats. In the combined pool, $14\%$ of the tested bins fail the convolution test, and the copula is fitted in about a third of them; the rest have a mixture marginal and keep independent draws. The rank coupling restores the duration--energy dependence: the median per-profile rank correlation of $(D, E)$, near zero for independent draws, is within $0.02$ of the data for Norway, ACN, and the combined pool ($0.34$, $0.57$, $0.47$) and below it for GIST-Res ($0.85$ vs.\ $0.93$) and GIST-Comm ($0.91$ vs.\ $0.98$). Over each entity's window, the simulated session count is within $8\%$ of the real one, except for GIST-Res ($+14\%$) and GIST-Comm ($+43\%$), where absences longer than $G_{\max}$ are not reproduced.
+
+
+Test power grows with sample size, so denser cohorts face a stricter bar, and a lower rate there does not by itself mean a worse fit. The $170$-entity combined pool is fit without per-context tuning yet attains the lowest divergence of all ($\mathrm{KL}_{\max}=0.011$), and the per-station ACN cohort validates as strongly as the per-driver cohorts (L1-$D$ $98\%$, L3 $97\%$), so the machinery is entity-agnostic (P6).
+
+
+Two complements that do not depend on test power agree with the tests: for arrival, duration, and energy, the Jensen--Shannon divergence is at most $0.012$~nats on every cohort, and the 1-Wasserstein distance is at most $0.55$~h in arrival and duration and $0.89$~kWh in energy.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures_de/fig_downstream_2x5.pdf}
+  \caption{(a)~Sessions per active day (mean$\pm$s.e.). Combined pool: (b)~sessions that overlap an earlier session of the same entity; (c)~coincidence factor vs.\ group size $K$; (d)~$10$-entity load-duration, real vs.\ SPARC; (e)~CF at $K=10$ (dotted: real). (f)--(j)~Average weekday load per entity. Baselines: count-matched pseudo-entities in (c) and (e), sessions placed on the real session dates in (b) and (f)--(j).}
+  \label{fig:downstream}
+\end{figure*}
+
+\subsection{Benchmark Against Baselines}
+\label{subsec:benchmark}
+We benchmark SPARC against three generators spanning the copula, deep-generative, and parametric families, along two axes: aggregate marginal fidelity, and the per-entity and joint structure aggregate marginals cannot see. Every method is fit on the same cleaned sessions per dataset and emits a matched session count. SPARC statistics pool five seeds; baseline variability is over $100$ bootstrap resamples for the marginals and $30$ random pseudo-entity partitions for the heterogeneity.
+
+\emph{Copula~\cite{einolander2021}} (Einolander--Lahdelma): empirical marginals coupled by a multivariate Student-$t$ copula and drawn i.i.d.\ from the pooled joint: within-session dependence, but no entity identity or session timing. \emph{GMMNet~\cite{li2024synthesis}}: conditional Gaussian-mixture density networks over the $(A,D,E)$ joint, Gibbs-sampled ($150$ epochs per dataset), reproducing marginals and cross-variable dependence but pooling all entities and drawing sessions independently. \emph{EV-SDG~\cite{lahariya2020}}: a widely cited parametric generator (DBSCAN session clustering, per-cluster mixtures, and an inter-arrival-time process) with its generative horizon capped at $24$~h.
+
+No per-entity baseline is included: SEVA~\cite{helmus2022validated}, the only per-entity generator in Table~\ref{tab:litreview}, needs a charging-point network that session records do not provide, so the pooled baselines are evaluated per entity through count-matched pseudo-entities (Table~\ref{tab:heterogeneity}, Fig.~\ref{fig:downstream}).
+
+Table~\ref{tab:benchmark} reports the aggregate marginals. The copula reproduces the pooled densities almost exactly ($\mathrm{KL}\le0.001$~nats on the large Norway and Combined pools), and SPARC is close behind in most columns, matching it on arrival for these two pools and leading on arrival for the sparser GIST cohorts. GMMNet trails both on all but ACN energy, and EV-SDG degrades sharply on duration and energy: its $24$~h cap cannot represent Norway's overnight sessions, inflating the duration divergence to $17.9$~nats.
+
+Table~\ref{tab:heterogeneity} shows what the marginals miss. We define $\sigma_A$ and $\sigma_D$ as the across-entity standard deviation of each entity's circular-mean arrival hour and mean plug-in duration, the direct signature of per-entity heterogeneity~(P1). SPARC recovers the real spread within $5\%$ on every dataset (Norway $\sigma_D=5.59\pm0.25$ vs.\ real $5.67$); the pooled baselines collapse the duration spread more than four-fold on every dataset, and the copula and GMMNet collapse the arrival spread three- to eight-fold, since an exchangeable session bag makes the entities near-identical on average. The same separation appears in the $24$~h load shape, where SPARC is lowest on all five datasets. A generator can thus be marginally exact yet produce a fleet of identical entities.
+
+
+
+\subsection{Downstream Operational Validity}
+\label{subsec:downstream}
+
+Fig.~\ref{fig:downstream} and Table~\ref{tab:entity} evaluate whether the generated sessions support the grid studies of Section~\ref{sec:introduction}, with session power $E/D$ spread over each session. A pooled baseline has no calendar, so in panels~(b) and (f)--(j) and in Table~\ref{tab:entity} its sessions are placed on each entity's real session dates, which gives it the real session counts. In panel~(b), no SPARC session overlaps an earlier session of its entity, whereas $20$--$26\%$ of the baseline sessions do. Panels~(c) and~(e) report the coincidence factor $\mathrm{CF}(K) = \max_t \sum_{u \in K} \ell_u(t) / \sum_u \max_t \ell_u(t)$, the diversity metric behind transformer sizing, with $\ell_u(t)$ the average daily load profile of entity $u$. SPARC follows the real curve within $0.04$ at every group size, while the pooled baselines stay near $0.9$: their statistically identical entities overstate coincidence by about $28\%$ at $K = 10$. In panel~(d), the $10$-entity pocket load-duration curves overlap through the operating range, with SPARC higher, by $15$--$20\%$, only in the top $0.5\%$ of hours. In panels~(f)--(j), SPARC follows the weekday load shape of each cohort, whereas the pooled baselines give every cohort nearly the same shape; SPARC still overstates the evening load and understates the early-morning load of the Norway cohort: the rank coupling matches the correlation but does not bound the session power $E/D$, so some short sessions carry too much energy.
+
+Table~\ref{tab:entity} compares five quantities entity by entity: the share of time connected (occupancy), the share of 22:00--06:00 connected (night availability), the share of energy delivered in 17:00--21:00 (peak-window share), the weekly energy, and the idle share of a session, $(D - E/P_u)/D$ with $P_u$ the $95$th percentile of the entity's $E/D$ (flexibility index). SPARC attains $\rho \geq 0.88$ with a median error of $10$--$17\%$; the baselines reach at most $\rho = 0.76$ with errors of $28$--$43\%$, and their peak-window share and flexibility index are unrelated to those of the real entity ($\rho \leq 0.05$). The index is least accurate for the GIST cohorts, which charge for almost the whole connection (median $0.03$--$0.08$ in the data, $0.07$--$0.18$ for SPARC).
+
+\begin{table}[t]
+\centering
+\caption{Per-entity downstream tests, combined pool: rank correlation $\rho$ between the real and synthetic values over the entities~/ median relative error (\%); SPARC: mean over five seeds.}
+\label{tab:entity}
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\begin{tabular}{lcccc}
+\toprule
+Test & SPARC & Copula & GMMNet & EV-SDG \\
+\midrule
+Occupancy          & \textbf{0.97~/~10} & 0.76~/~40 & 0.76~/~41 & 0.76~/~43 \\
+Night availability & \textbf{0.96~/~14} & 0.72~/~41 & 0.72~/~42 & 0.73~/~43 \\
+Peak-window share  & \textbf{0.88~/~17} & 0.05~/~37 & $-$0.07~/~31 & $-$0.02~/~28 \\
+Weekly energy      & \textbf{0.94~/~11} & 0.61~/~38 & 0.61~/~36 & 0.61~/~35 \\
+Flexibility index  & \textbf{0.97~/~10} & $-$0.31~/~34 & $-$0.31~/~35 & $-$0.32~/~36 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Sparse-data sensitivity: fit on each driver's first $n$ sessions, evaluated against the \emph{full} history (KL, nats; median per-entity error).}
+\label{tab:lowdata}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabular}{rcccccc}
+\toprule
+$n$ & $\mathrm{KL}_A$ & $\mathrm{KL}_D$ & $\mathrm{KL}_E$ & $\mathrm{MAE}_D$ (h) & $\mathrm{MAE}_E$ (kWh) & $\mathrm{MAE}_A$ (h) \\
+\midrule
+$10$  & 0.022 & 0.153 & 0.054 & 4.86 & 5.63 & 1.80 \\
+$20$  & 0.014 & 0.103 & 0.025 & 2.93 & 3.45 & 1.16 \\
+$30$  & 0.017 & 0.073 & 0.016 & 1.67 & 1.78 & 0.82 \\
+$50$  & 0.015 & 0.053 & 0.020 & 1.55 & 1.37 & 0.52 \\
+$100$ & 0.013 & 0.039 & 0.014 & 0.51 & 0.66 & 0.35 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Low-Data Sensitivity}
+\label{subsec:lowdata}
+
+P5 claims stable fits from tens of sessions per entity. SPARC is refit on the pooled driver cohorts ($155$ entities) with each history truncated to its chronologically first $n \in \{10, 20, 30, 50, 100\}$ sessions, relaxing the inclusion rule accordingly, and every fit is evaluated against the entity's \emph{full} record. Table~\ref{tab:lowdata} shows graceful degradation: every population KL stays within the L4 tolerance $\epsilon = 0.15$ down to $n = 20$, and at $n = 10$ only duration touches it ($0.153$); per-entity error shrinks monotonically with history length ($4.9 \to 0.5$~h in mean duration). Fits are already usable at $20$--$30$ sessions.
+
+\section{Conclusion}
+\label{sec:conclusion}
+We presented SPARC, a per-entity semi-Markov framework that represents EV charging as each entity's recurring session patterns. It combines a chain over time-of-day intervals, BIC-selected non-exponential per-bin marginals, a three-level fallback for sparse profiles, a duration--gap correction where independence fails, a rank coupling of energy to duration, and a simulator whose sessions never overlap for an entity. Across four cohorts from three open datasets and their combined pool, SPARC passes the four-level protocol at high rates without per-context tuning, stays close to copula, deep-generative, and parametric baselines on aggregate marginals, and alone preserves the between-entity differences and each entity's occupancy, energy, and flexibility. Occupancy is enforced by moving sessions to a later day, the energy coupling matches only a rank correlation, and absences longer than the gap cap are not reproduced; future work addresses these, together with seasonal effects, charging-power time series, and anonymous public charging.
+
+\bibliographystyle{IEEEtran}
+\bibliography{myRef}
+
+\end{document}

@@ -1,0 +1,110 @@
+--- smc_core_current.jl	2026-11-12 18:55:54.914193252 +0500
++++ smc_core_de.jl	2026-11-12 18:56:10.213494047 +0500
+@@ -1,4 +1,10 @@
+ # =============================================================================
++# smc_core_de.jl — COPY of smc_core.jl with ONE addition: the duration–energy
++# dependence in Stage 4 (search for "Duration–energy dependence").  Everything
++# else is identical to smc_core.jl.  Use it through run_de_N.jl, which writes
++# to artifacts_de/ and never touches artifacts/ or smc_core.jl.
++# =============================================================================
++# =============================================================================
+ # smc_core.jl — SHARED SMC framework body (single source of truth)
+ # -----------------------------------------------------------------------------
+ # This is SMC_framework_norway.jl's body with ONLY the 7 per-dataset values
+@@ -1042,6 +1048,96 @@
+     return out[keep, :]
+ end
+ 
++# ----- Duration–energy dependence (smc_core_de.jl only) -------------------------
++# Energy and duration are drawn independently in the loop above.  Here the drawn
++# energies are re-paired with the drawn durations so that their rank correlation
++# matches the one observed for the entity (Iman–Conover reordering with normal
++# scores).  Sessions are re-paired only within a group that shares one energy
++# law: a bin with its own energy fit, or all other bins of the profile.  Every
++# group keeps exactly the same energy values, so the fitted energy laws and the
++# L1/L4 energy results are unchanged; only which session receives which energy
++# changes.  Target correlation: the group's real pairs if it has at least
++# N_BIN_NOMINAL of them, otherwise the profile's, otherwise the day type's.
++
++function de_spearman(d, e)
++    (length(d) < N_BIN_NOMINAL || std(d) == 0 || std(e) == 0) && return NaN
++    return corspearman(Float64.(d), Float64.(e))
++end
++
++function de_group_of(profiles, uid, dt, b)
++    p = get(profiles, (String(uid), String(dt)), nothing)
++    return (E_PER_BIN && p !== nothing && p.n_bin[b] >= N_BIN_NOMINAL) ? Int(b) : 0
++end
++
++function de_targets(pairs_df::DataFrame, profiles)
++    grp = [de_group_of(profiles, u, d, b) for (u, d, b) in
++           zip(pairs_df.user_id, pairs_df.day_type, pairs_df.bin_i)]
++    pd  = DataFrame(user_id = String.(pairs_df.user_id), day_type = String.(pairs_df.day_type),
++                    grp = grp, D = Float64.(pairs_df.D), E = Float64.(pairs_df.E))
++    r_grp = Dict{Tuple{String,String,Int},Float64}()
++    r_prf = Dict{Tuple{String,String},Float64}()
++    r_day = Dict{String,Float64}()
++    for sub in groupby(pd, :day_type)
++        r_day[sub.day_type[1]] = de_spearman(sub.D, sub.E)
++    end
++    for sub in groupby(pd, [:user_id, :day_type])
++        r_prf[(sub.user_id[1], sub.day_type[1])] = de_spearman(sub.D, sub.E)
++    end
++    for sub in groupby(pd, [:user_id, :day_type, :grp])
++        r_grp[(sub.user_id[1], sub.day_type[1], sub.grp[1])] = de_spearman(sub.D, sub.E)
++    end
++    return r_grp, r_prf, r_day
++end
++
++function couple_energy!(df::DataFrame, pairs_df::DataFrame, profiles)
++    r_grp, r_prf, r_day = de_targets(pairs_df, profiles)
++    df.de_group = [de_group_of(profiles, u, d, b) for (u, d, b) in
++                   zip(df.user_id, df.day_type, df.bin)]
++    for sub in groupby(df, [:user_id, :day_type, :de_group])
++        n = nrow(sub)
++        n < 3 && continue
++        uid, dt = String(sub.user_id[1]), String(sub.day_type[1])
++        r = get(r_grp, (uid, dt, sub.de_group[1]), NaN)
++        isnan(r) && (r = get(r_prf, (uid, dt), NaN))
++        isnan(r) && (r = get(r_day, dt, NaN))
++        isnan(r) && continue
++        ρ  = clamp(2 * sin(π * r / 6), -0.99, 0.99)        # Spearman → normal-score correlation
++        zD = quantile.(Normal(), tiedrank(sub.duration_h) ./ (n + 1))
++        zE = ρ .* zD .+ sqrt(1 - ρ^2) .* randn(n)
++        rows = parentindices(sub)[1]
++        df.energy_kwh[rows] = sort(Vector{Float64}(sub.energy_kwh))[ordinalrank(zE)]
++    end
++    select!(df, Not(:de_group))
++    return df
++end
++
++function de_profile_median(df::DataFrame, dcol::Symbol, ecol::Symbol)
++    v = Float64[]
++    for sub in groupby(df, [:user_id, :day_type])
++        r = de_spearman(sub[!, dcol], sub[!, ecol])
++        isnan(r) || push!(v, r)
++    end
++    return isempty(v) ? NaN : median(v)
++end
++
++pairs_de       = CSV.read(joinpath(ARTIFACTS_DIR, "pairs.csv"), DataFrame)
++rho_de_before  = corspearman(Float64.(sim_df.duration_h), Float64.(sim_df.energy_kwh))
++med_de_before  = de_profile_median(sim_df, :duration_h, :energy_kwh)
++couple_energy!(sim_df, pairs_de, profiles)
++rho_de_real    = corspearman(Float64.(pairs_de.D), Float64.(pairs_de.E))
++med_de_real    = de_profile_median(pairs_de, :D, :E)
++rho_de_after   = corspearman(Float64.(sim_df.duration_h), Float64.(sim_df.energy_kwh))
++med_de_after   = de_profile_median(sim_df, :duration_h, :energy_kwh)
++@printf("\n  Duration–energy dependence (rank correlation)\n")
++@printf("    Pooled               : real %.3f | drawn %.3f | re-paired %.3f\n",
++         rho_de_real, rho_de_before, rho_de_after)
++@printf("    Per-profile median   : real %.3f | drawn %.3f | re-paired %.3f\n",
++         med_de_real, med_de_before, med_de_after)
++CSV.write(joinpath(ARTIFACTS_DIR, "de_dependence.csv"), DataFrame(
++    rho_pooled_real = rho_de_real, rho_pooled_drawn = rho_de_before, rho_pooled_out = rho_de_after,
++    rho_profile_median_real = med_de_real, rho_profile_median_drawn = med_de_before,
++    rho_profile_median_out = med_de_after))
++
+ n_drawn          = nrow(sim_df)
+ n_overlap_before = count_overlaps(sim_df)
+ sim_df.seq       = collect(1:nrow(sim_df))

@@ -20,8 +20,10 @@ mpl.rcParams.update({
 })
 REAL_C, SIM_C = "0.45", "#1f6fb4"
 COL2 = 7.16
-IN  = "/sessions/awesome-friendly-euler/mnt/SDG/SDG/paper_results/artifacts"
-OUT = "/sessions/awesome-friendly-euler/mnt/SDG/SPARC/figures"
+# paths relative to the repository: <repo>/paper_results/plotting/make_paper_figs.py
+_PR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))          # <repo>/paper_results
+IN  = os.environ.get("SPARC_ARTIFACTS", os.path.join(_PR, "artifacts"))
+OUT = os.environ.get("SPARC_FIGURES",   os.path.join(_PR, "figures_new"))
 os.makedirs(OUT, exist_ok=True)
 DATASETS = [("Norway","norway_sorensen_N100_b12_s01"),("GIST-Res","korea_gist_N030_b24_s01"),
             ("GIST-Comm","kim_commercial_N025_b24_s01"),("ACN","acn_caltech_N015_b12_s01"),

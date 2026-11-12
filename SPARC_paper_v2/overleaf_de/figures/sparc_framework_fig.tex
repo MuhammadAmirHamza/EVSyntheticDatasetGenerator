@@ -1,0 +1,124 @@
+% Auto-generated from figures/sparc_framework.tex (standalone). Do not hand-edit;
+% regenerate from the standalone so the two stay in sync.
+% Preamble needs: \usetikzlibrary{arrows.meta,positioning,fit,backgrounds,shapes.symbols,calc}
+\begin{figure}[t]
+\centering
+\resizebox{0.94\columnwidth}{!}{%
+\newcommand{\mchain}[3]{%
+  \begin{scope}[shift={(#1,#2)}]
+    \node[st,draw=#3] (ma) at (-0.36, 0.08) {};
+    \node[st,draw=#3] (mb) at ( 0.28, 0.16) {};
+    \node[st,draw=#3] (mc) at (-0.04,-0.30) {};
+    \draw[-{Latex[length=1.4mm,width=1.2mm]},semithick,color=#3] (ma) -- (mb);
+    \draw[-{Latex[length=1.4mm,width=1.2mm]},semithick,color=#3] (mb) -- (mc);
+    \draw[-{Latex[length=1.4mm,width=1.2mm]},semithick,color=#3] (mc) -- (ma);
+    \draw[-{Latex[length=1.4mm,width=1.2mm]},semithick,color=#3]
+         (mb) to[out=55,in=115,looseness=5] (mb);
+  \end{scope}}
+
+\begin{tikzpicture}[
+  >={Latex[length=2.8mm,width=2.2mm]},
+  arrow/.style={->, thick},
+  block/.style={draw, thick, rounded corners=3pt, fill=white, align=center},
+  card/.style={draw, thick, rounded corners=2.5pt, fill=white,
+               minimum width=1.55cm, minimum height=1.2cm},
+  gcard/.style={card, draw=black!35},
+  st/.style={circle, draw, thick, fill=white, inner sep=0pt, minimum size=7pt},
+  capt/.style={font=\scriptsize\itshape\bfseries, align=center},
+  cloudnode/.style={cloud, draw, thick, cloud puffs=13, cloud puff arc=110,
+                    aspect=2.0, align=center, font=\small\bfseries, inner ysep=1.5ex}
+]
+
+%=================== Profile estimation ===================
+\node[block, minimum width=3.1cm, minimum height=2.9cm] (pe) at (4.9,0) {};
+\node[anchor=north, font=\small\bfseries, align=center]
+      at ([yshift=-5pt]pe.north) {Profile\\estimation};
+\begin{scope}[shift={([xshift=-1.2cm,yshift=-1.0cm]pe.center)}]
+  \draw[thick] (0,1.05) -- (0,0) -- (2.4,0);
+  \draw[very thick] plot[smooth]
+    coordinates {(0.05,0.02) (0.55,0.82) (1.15,0.33) (1.75,0.92) (2.3,0.02)};
+\end{scope}
+\node[capt, anchor=south] at ([yshift=3pt]pe.south) {BIC per-bin fit};
+
+%=================== Profile bank (2 x 3 cards, small Markov chains) ===================
+\node[card]  (c1) at ( 8.40, 0.78) {};
+\node[card]  (c2) at (10.15, 0.78) {};
+\node[gcard] (c3) at (11.90, 0.78) {};
+\node[gcard] (c4) at ( 8.40,-0.78) {};
+\node[card]  (c5) at (10.15,-0.78) {};
+\node[card]  (c6) at (11.90,-0.78) {};
+
+\mchain{ 8.40}{ 0.78}{black}
+\mchain{10.15}{ 0.78}{black}
+\mchain{11.90}{ 0.78}{black!35}
+\mchain{ 8.40}{-0.78}{black!35}
+\mchain{10.15}{-0.78}{black}
+\mchain{11.90}{-0.78}{black}
+
+\node[capt] at (10.15,-1.80) {estimated profiles $\Theta_{u,d}$};
+
+%=================== Simulator (session bars on two streams) ===================
+\node[block, minimum width=3.2cm, minimum height=2.9cm] (sim) at (15.6,0) {};
+\node[anchor=north, font=\small\bfseries] at ([yshift=-5pt]sim.north) {Simulator};
+\begin{scope}[shift={([xshift=-1.25cm]sim.center)}]
+  % weekday stream: solid axis, filled session bars
+  \draw[->, thick] (0,0.18) -- (2.5,0.18);
+  \filldraw[fill=black, draw=black] (0.15,0.24) rectangle (0.48,0.44);
+  \filldraw[fill=black, draw=black] (0.72,0.24) rectangle (0.92,0.44);
+  \filldraw[fill=black, draw=black] (1.18,0.24) rectangle (1.56,0.44);
+  \filldraw[fill=black, draw=black] (1.82,0.24) rectangle (2.06,0.44);
+  % weekend stream: dashed axis, outlined session bars
+  \draw[->, thick, dash pattern=on 3pt off 2pt] (0,-0.42) -- (2.5,-0.42);
+  \filldraw[fill=white, draw=black, thick] (0.34,-0.36) rectangle (0.63,-0.16);
+  \filldraw[fill=white, draw=black, thick] (1.05,-0.36) rectangle (1.47,-0.16);
+  \filldraw[fill=white, draw=black, thick] (1.88,-0.36) rectangle (2.09,-0.16);
+\end{scope}
+\node[capt, anchor=south] at ([yshift=3pt]sim.south) {one stream per day type};
+
+%=================== Simulation config (external, above simulator) ===================
+\node[block, anchor=south, inner xsep=10pt, inner ysep=7pt]
+  (cfg) at ([yshift=1.15cm]sim.north)
+  {\small\bfseries Simulation config\\[2pt]
+   \scriptsize\itshape\bfseries horizon $H$ $\cdot$ anchor $t_0$\\
+   \scriptsize\itshape\bfseries entity set $\cdot$ day-type streams\\[12pt]
+   \mbox{}};
+% mini t0 -> H horizon axis in the lower part of the config box
+\draw[->, thick] ([xshift=-1.00cm,yshift=0.26cm]cfg.south)
+                 -- ([xshift=1.10cm,yshift=0.26cm]cfg.south);
+\draw[thick] ([xshift=-1.00cm,yshift=0.16cm]cfg.south)
+             -- ([xshift=-1.00cm,yshift=0.36cm]cfg.south);
+\node[font=\tiny, anchor=south] at ([xshift=-1.00cm,yshift=0.40cm]cfg.south) {$t_0$};
+\node[font=\tiny, anchor=south] at ([xshift= 0.05cm,yshift=0.40cm]cfg.south) {$H$};
+
+%=================== SPARC framework frame (drawn behind) ===================
+% invisible pads give the frame headroom for its title and the bottom caption
+\coordinate (frametoppad) at ($(pe.north)+(0,0.62)$);
+\coordinate (framebotpad) at (10.15,-2.10);
+\begin{scope}[on background layer]
+  \node[draw, thick, dashed, rounded corners=6pt, fill=black!3, inner sep=11pt,
+        fit=(pe)(c1)(c6)(sim)(frametoppad)(framebotpad)] (frame) {};
+\end{scope}
+\node[anchor=north, font=\small\bfseries] at ([yshift=-4pt]frame.north)
+      {SPARC framework};
+
+%=================== Population clouds ===================
+\node[cloudnode, anchor=east] (real)
+      at ($(frame.west |- 0,0)+(-0.7,0)$) {Real\\population};
+\node[cloudnode, anchor=west, minimum width=4.6cm, minimum height=3.1cm,
+      cloud puffs=18] (simpop)
+      at ($(frame.east |- 0,0)+(0.7,0)$) {Simulated\\population};
+
+%=================== Main arrows (all on the y=0 midline) ===================
+\draw[arrow] (real.east)          -- (frame.west |- 0,0);
+\draw[arrow] (pe.east)            -- (c1.west |- 0,0);
+\draw[arrow] (c3.east |- 0,0)     -- (sim.west);
+\draw[arrow] (frame.east |- 0,0)  -- (simpop.west);
+\draw[arrow] (cfg.south)          -- (sim.north);
+\node[capt] at ($(c3.east |- 0,0)!0.5!(sim.west)+(0,0.45)$)
+      {selected\\profiles};
+
+\end{tikzpicture}
+}
+\caption{SPARC learns per-entity behaviour as semi-Markov profiles and replays them with a configurable simulator to generate a synthetic charging population.}
+\label{fig:framework}
+\end{figure}

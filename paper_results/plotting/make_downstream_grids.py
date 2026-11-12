@@ -7,6 +7,7 @@ import argparse, os
 import numpy as np, pandas as pd
 import matplotlib as mpl; mpl.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.ticker
 from matplotlib.lines import Line2D
 
 mpl.rcParams.update({
@@ -31,6 +32,12 @@ RNG = np.random.default_rng(0)
 ap = argparse.ArgumentParser()
 for k in ("real", "sparc", "copula", "gmmnet", "evsdg", "metrics"): ap.add_argument("--" + k)
 ap.add_argument("--out", default=".")
+ap.add_argument("--entity-dir", default=None,
+                help="folder with the outputs of benchmarking/downstream_entity_cases.py "
+                     "(default: the folder of --metrics)")
+ap.add_argument("--panel-b", default="overlap", choices=["overlap", "energy", "load"],
+                help="panel (b) of the 1x5 / 2x5 figures: overlapping sessions, per-entity "
+                     "weekly-energy error, or the pooled weekday load (old panel)")
 a = ap.parse_args(); os.makedirs(a.out, exist_ok=True)
 
 real = pd.read_csv(a.real); real["start"] = pd.to_datetime(real.abs_start)
@@ -124,7 +131,8 @@ def panel_cf(ax):
                 marker=MK[lab], ms=3, lw=1.4 if lab in ("Real", "SPARC") else 0.9,
                 color=col, label=lab, markerfacecolor=col, markeredgewidth=0)
     ax.set_xscale("log"); ax.set_xticks([2, 5, 10, 20, 50]); ax.set_xticklabels([2, 5, 10, 20, 50])
-    ax.set_xlabel("Group size $K$ (users)"); ax.set_ylabel("Coincidence factor")
+    ax.xaxis.set_minor_formatter(mpl.ticker.NullFormatter())      # no minor labels (newer matplotlib)
+    ax.set_xlabel("Group size $K$ (entities)"); ax.set_ylabel("Coincidence factor")
     ax.set_ylim(0.5, 1.0)
 
 def panel_ld(ax):
@@ -132,7 +140,7 @@ def panel_ld(ax):
     ax.plot(x, LD["Real"], color=REAL_C, lw=1.4, label="Real")
     ax.plot(x, LD["SPARC"], color=C["SPARC"], lw=1.2, ls="--", label="SPARC")
     ax.set_xlim(0, 20); ax.set_ylim(bottom=0)
-    ax.set_xlabel("Hours exceeded (%)"); ax.set_ylabel(f"{KP}-user load (kW)")
+    ax.set_xlabel("Hours exceeded (%)"); ax.set_ylabel(f"{KP}-entity load (kW)")
 
 def panel_gp(ax):
     labels = ["Load factor", f"Utilization\n({RATING:.0f} kVA)", "CF ($K$=10)"]
@@ -189,7 +197,7 @@ for suf, PANELS in VARIANTS.items():
 
 
 # ---------------- 1x5 variant: prepend sessions-per-active-day panel ------------
-ART = "/mnt/user-data/uploads/SDG/SDG/paper_results/artifacts"
+ART = os.environ.get("SPARC_ARTIFACTS", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "artifacts"))
 COHORTS = [("Norway", "norway_sorensen_N100_b12_s01"), ("GIST-Res", "korea_gist_N030_b24_s01"),
            ("GIST-Comm", "kim_commercial_N025_b24_s01"), ("ACN", "acn_caltech_N015_b12_s01"),
            ("Combined", "combined_all_N200_b24_s01")]
@@ -212,13 +220,51 @@ def panel_sessions(ax):
     ax.set_ylim(0, max(np.add(rmu, rse).max(), np.add(smu, sse).max()) * 1.25)
     ax.grid(axis="x", visible=False)
 
-P5 = [("(a)", panel_sessions), ("(b)", panel_load), ("(c)", panel_cf), ("(d)", panel_ld), ("(e)", panel_cfbar)]
+# ---------------- per-entity panels (from benchmarking/downstream_entity_cases.py) ----------
+EDIR = a.entity_dir or os.path.dirname(os.path.abspath(a.metrics))
+GENS = ["Real", "SPARC", "Copula", "GMMNet", "EV-SDG"]
+def _read(name):
+    f = os.path.join(EDIR, name)
+    return pd.read_csv(f) if os.path.isfile(f) else None
+ECASES, EVALS, ELOAD = (_read("downstream_entity_cases.csv"), _read("downstream_entity_values.csv"),
+                        _read("downstream_load_profiles.csv"))
+
+def panel_overlap(ax):
+    """sessions that start before an earlier session of the same entity has ended"""
+    t = ECASES.set_index("generator").overlap
+    gens = [g for g in GENS if g in t.index]; xs = np.arange(len(gens)); vals = [float(t[g]) for g in gens]
+    ax.bar(xs, vals, 0.62, color=[REAL_C if g == "Real" else C[g] for g in gens], alpha=0.9)
+    for x0, v in zip(xs, vals): ax.text(x0, v + 0.6, f"{v:.1f}", ha="center", fontsize=6)
+    ax.set_xticks(xs); ax.set_xticklabels(gens, rotation=90, fontsize=6); ax.tick_params(axis="x", length=0)
+    ax.set_ylabel("Overlapping sessions (%)"); ax.set_ylim(0, max(vals) * 1.22 + 1)
+    ax.grid(axis="x", visible=False)
+
+def panel_energy(ax):
+    """per-entity error in mean weekly energy: share of entities below a given error"""
+    r = EVALS["real_weekly_energy"]
+    for g in GENS[1:]:
+        col = g + "_weekly_energy"
+        if col not in EVALS: continue
+        m = r.notna() & EVALS[col].notna() & (r > 0)
+        e = np.sort(100 * np.abs(EVALS[col][m] - r[m]) / r[m])
+        ax.plot(np.r_[0, e, 1e4], np.r_[0, np.arange(1, len(e) + 1) / len(e), 1], drawstyle="steps-post",
+                color=C[g], ls=LS[g], lw=1.2 if g == "SPARC" else 0.9)
+    ax.set_xlim(0, 100); ax.set_ylim(0, 1.02); ax.set_xticks([0, 50, 100])
+    ax.set_xlabel("Weekly-energy error (%)"); ax.set_ylabel("Share of entities")
+
+PANEL_B = {"overlap": panel_overlap, "energy": panel_energy, "load": panel_load}[a.panel_b]
+if (a.panel_b == "overlap" and ECASES is None) or (a.panel_b == "energy" and EVALS is None):
+    print("  per-entity files not found in", EDIR, "-> panel (b) falls back to the pooled load;"
+          " run benchmarking/downstream_entity_cases.py first")
+    PANEL_B = panel_load
+
+P5 = [("(a)", panel_sessions), ("(b)", PANEL_B), ("(c)", panel_cf), ("(d)", panel_ld), ("(e)", panel_cfbar)]
 fig, axes = plt.subplots(1, 5, figsize=(COL2, 1.9))
 for (tag, fn), ax in zip(P5, axes):
     fn(ax)
     for sp in ax.spines.values(): sp.set_visible(True)
     ax.set_title(tag, loc="left", fontsize=8, fontweight="bold", pad=3)
-axes[1].set_ylim(bottom=0.02)                      # floor the load axis
+if PANEL_B is panel_load: axes[1].set_ylim(bottom=0.02)      # floor the load axis
 axes[4].set_xticklabels(["Real", "SPARC", "Copula", "GMMNet", "EV-SDG"],
                         rotation=90, fontsize=6)
 axes[4].tick_params(axis="x", length=0)
@@ -233,3 +279,66 @@ fig.tight_layout(w_pad=0.25)
 fig.savefig(f"{a.out}/fig_downstream_1x5_cfbar.pdf", bbox_inches="tight")
 fig.savefig(f"{a.out}/fig_downstream_1x5_cfbar.png", bbox_inches="tight", dpi=300)
 print("wrote fig_downstream_1x5_cfbar")
+
+
+# ---------------- 2x5 variant: second row = weekday load per entity, per cohort ------------
+def panel_load_group(ax, grp):
+    h = np.arange(24) + 0.5
+    d = ELOAD[ELOAD.group == grp]
+    y = {g: d[d.generator == g].sort_values("hour").weekday_kW.values for g in GENS if (d.generator == g).any()}
+    ax.fill_between(h, y["Real"], color=REAL_C, alpha=0.35, lw=0)
+    ax.plot(h, y["Real"], color=REAL_C, lw=1.4)
+    for g in GENS[1:]:
+        if g in y: ax.plot(h, y[g], color=C[g], ls=LS[g], lw=1.2 if g == "SPARC" else 0.9)
+    ax.set_xlim(0, 24); ax.set_xticks([0, 6, 12, 18, 24]); ax.set_ylim(0, max(v.max() for v in y.values()) * 1.1)
+    ax.set_xlabel("Hour of day")
+
+groups = list(dict.fromkeys(ELOAD.group))[:5] if ELOAD is not None else []
+if groups:
+    fig, axes = plt.subplots(2, 5, figsize=(COL2, 3.25))
+    for (tag, fn), ax in zip(P5, axes[0]):
+        fn(ax); ax.set_title(tag, loc="left", fontsize=8, fontweight="bold", pad=3)
+    if PANEL_B is panel_load: axes[0, 1].set_ylim(bottom=0.02)
+    axes[0, 4].set_xticklabels(GENS, rotation=90, fontsize=6); axes[0, 4].tick_params(axis="x", length=0)
+    for k, (grp, ax) in enumerate(zip(groups, axes[1])):
+        panel_load_group(ax, grp)
+        ax.set_title(f"({'fghij'[k]})", loc="left", fontsize=8, fontweight="bold", pad=3)
+        ax.set_title(grp, loc="center", fontsize=7.5, pad=3)
+    axes[1, 0].set_ylabel("Weekday load per entity (kW)")
+    for ax in axes.ravel():
+        for sp in ax.spines.values(): sp.set_visible(True)
+    fig.legend(handles=handles, loc="upper center", ncol=5, frameon=False,
+               bbox_to_anchor=(0.5, 1.05), handlelength=2.2, columnspacing=1.2)
+    fig.tight_layout(w_pad=0.25, h_pad=0.9)
+    fig.savefig(f"{a.out}/fig_downstream_2x5.pdf", bbox_inches="tight")
+    fig.savefig(f"{a.out}/fig_downstream_2x5.png", bbox_inches="tight", dpi=600)
+    print("wrote fig_downstream_2x5")
+
+
+# ---------------- every panel as its own file (equal size, 600 dpi PNG + PDF) --------------
+PDIR = os.path.join(a.out, "panels"); os.makedirs(PDIR, exist_ok=True)
+def save_panel(fn, name, title=None, ylabel=None, rot90=False):
+    fig, ax = plt.subplots(figsize=(1.43, 1.9)); fn(ax)
+    for sp in ax.spines.values(): sp.set_visible(True)
+    if rot90: ax.set_xticklabels(GENS[:len(ax.get_xticks())], rotation=90, fontsize=6); ax.tick_params(axis="x", length=0)
+    if title: ax.set_title(title, fontsize=8, fontweight="bold", pad=3)
+    if ylabel: ax.set_ylabel(ylabel)
+    fig.subplots_adjust(left=0.33, right=0.93, bottom=0.31, top=0.91)      # fixed margins: panels align
+    for ext in ("pdf", "png"): fig.savefig(os.path.join(PDIR, name + "." + ext), dpi=600)
+    plt.close(fig)
+
+save_panel(panel_sessions, "fig5_sessions_per_day")
+save_panel(panel_load, "fig5_load_pooled")
+save_panel(panel_cf, "fig5_cf_vs_K")
+save_panel(panel_ld, "fig5_load_duration")
+save_panel(panel_cfbar, "fig5_cf_K10", rot90=True)
+if ECASES is not None: save_panel(panel_overlap, "fig5_overlap")
+if EVALS is not None:  save_panel(panel_energy, "fig5_weekly_energy_error")
+for grp in groups:
+    save_panel(lambda ax, g=grp: panel_load_group(ax, g), "fig5_load_" + grp.lower().replace("-", "_"),
+               title=grp, ylabel="Weekday load (kW)")
+fig = plt.figure(figsize=(COL2, 0.25))
+fig.legend(handles=handles, loc="center", ncol=5, frameon=False, handlelength=2.2, columnspacing=1.2)
+for ext in ("pdf", "png"): fig.savefig(os.path.join(PDIR, "fig5_legend." + ext), dpi=600)
+plt.close(fig)
+print("wrote single panels ->", PDIR)

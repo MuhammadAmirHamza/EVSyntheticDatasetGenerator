@@ -1,0 +1,1199 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.11.11)  12 NOV 2026 20:36
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**./main_paper_de.tex
+(main_paper_de.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2025-12-24>
+(IEEEtran.cls
+Document Class: IEEEtran 2015/08/26 V1.8b by Michael Shell
+-- See the "IEEEtran_HOWTO" manual for usage information.
+-- http://www.michaelshell.org/tex/ieeetran/
+\@IEEEtrantmpdimenA=\dimen148
+\@IEEEtrantmpdimenB=\dimen149
+\@IEEEtrantmpdimenC=\dimen150
+\@IEEEtrantmpcountA=\count275
+\@IEEEtrantmpcountB=\count276
+\@IEEEtrantmpcountC=\count277
+\@IEEEtrantmptoksA=\toks17
+LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 5
+03.
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+-- Using 8.5in x 11in (letter) paper.
+-- Using PDF output.
+\@IEEEnormalsizeunitybaselineskip=\dimen151
+-- This is a 10 point document.
+LaTeX Encoding Info:    Redeclaring text command \textunderscore (encoding ?) o
+n input line 940.
+\CLASSINFOnormalsizebaselineskip=\dimen152
+\CLASSINFOnormalsizeunitybaselineskip=\dimen153
+\IEEEnormaljot=\dimen154
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1086.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1086.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1086.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1086.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1086.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1086.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1086.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1086.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1086.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1086.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <11> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1086.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <11> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1086.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1086.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1086.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <18> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1086.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <18> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1086.
+
+\IEEEquantizedlength=\dimen155
+\IEEEquantizedlengthdiff=\dimen156
+\IEEEquantizedtextheightdiff=\dimen157
+\IEEEilabelindentA=\dimen158
+\IEEEilabelindentB=\dimen159
+\IEEEilabelindent=\dimen160
+\IEEEelabelindent=\dimen161
+\IEEEdlabelindent=\dimen162
+\IEEElabelindent=\dimen163
+\IEEEiednormlabelsep=\dimen164
+\IEEEiedmathlabelsep=\dimen165
+\IEEEiedtopsep=\skip49
+\c@section=\count278
+\c@subsection=\count279
+\c@subsubsection=\count280
+\c@paragraph=\count281
+\c@IEEEsubequation=\count282
+\abovecaptionskip=\skip50
+\belowcaptionskip=\skip51
+\c@figure=\count283
+\c@table=\count284
+\@IEEEeqnnumcols=\count285
+\@IEEEeqncolcnt=\count286
+\@IEEEsubeqnnumrollback=\count287
+\@IEEEquantizeheightA=\dimen166
+\@IEEEquantizeheightB=\dimen167
+\@IEEEquantizeheightC=\dimen168
+\@IEEEquantizeprevdepth=\dimen169
+\@IEEEquantizemultiple=\count288
+\@IEEEquantizeboxA=\box53
+\@IEEEtmpitemindent=\dimen170
+\IEEEPARstartletwidth=\dimen171
+\c@IEEEbiography=\count289
+\@IEEEtranrubishbin=\box54
+)
+** ATTENTION: Overriding command lockouts (line 2).
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/cite\cite.sty
+LaTeX Info: Redefining \cite on input line 302.
+LaTeX Info: Redefining \nocite on input line 332.
+Package: cite 2015/02/27  v 5.5
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
+Package: amsmath 2025/07/09 v2.17z AMS math features
+\@mathmargin=\skip52
+
+For additional information on amsmath, use the `?' option.
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amstext.sty
+Package: amstext 2024/11/17 v2.01 AMS text
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks18
+\ex@=\dimen172
+))
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen173
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsopn.sty
+Package: amsopn 2022/04/08 v2.04 operator names
+)
+\inf@bad=\count290
+LaTeX Info: Redefining \frac on input line 233.
+\uproot@=\count291
+\leftroot@=\count292
+LaTeX Info: Redefining \overline on input line 398.
+LaTeX Info: Redefining \colon on input line 409.
+\classnum@=\count293
+\DOTSCASE@=\count294
+LaTeX Info: Redefining \ldots on input line 495.
+LaTeX Info: Redefining \dots on input line 498.
+LaTeX Info: Redefining \cdots on input line 619.
+\Mathstrutbox@=\box55
+\strutbox@=\box56
+LaTeX Info: Redefining \big on input line 721.
+LaTeX Info: Redefining \Big on input line 722.
+LaTeX Info: Redefining \bigg on input line 723.
+LaTeX Info: Redefining \Bigg on input line 724.
+\big@size=\dimen174
+LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
+\macc@depth=\count295
+LaTeX Info: Redefining \bmod on input line 904.
+LaTeX Info: Redefining \pmod on input line 909.
+LaTeX Info: Redefining \smash on input line 939.
+LaTeX Info: Redefining \relbar on input line 969.
+LaTeX Info: Redefining \Relbar on input line 970.
+\c@MaxMatrixCols=\count296
+\dotsspace@=\muskip17
+\c@parentequation=\count297
+\dspbrk@lvl=\count298
+\tag@help=\toks19
+\row@=\count299
+\column@=\count300
+\maxfields@=\count301
+\andhelp@=\toks20
+\eqnshift@=\dimen175
+\alignsep@=\dimen176
+\tagshift@=\dimen177
+\tagwidth@=\dimen178
+\totwidth@=\dimen179
+\lineht@=\dimen180
+\@envbody=\toks21
+\multlinegap=\skip53
+\multlinetaggap=\skip54
+\mathdisplay@stack=\toks22
+LaTeX Info: Redefining \[ on input line 2950.
+LaTeX Info: Redefining \] on input line 2951.
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)) (C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.st
+y
+Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks23
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
+Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.c
+fg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 106.
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen181
+\Gin@req@width=\dimen182
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/caption\subcaption.sty
+Package: subcaption 2023/07/28 v1.6b Sub-captions (AR)
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption.sty
+Package: caption 2023/08/05 v3.6o Customizing captions (AR)
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption3.sty
+Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
+\caption@tempdima=\dimen183
+\captionmargin=\dimen184
+\caption@leftmargin=\dimen185
+\caption@rightmargin=\dimen186
+\caption@width=\dimen187
+\caption@indent=\dimen188
+\caption@parindent=\dimen189
+\caption@hangindent=\dimen190
+Package caption Info: Unknown document class (or package),
+(caption)             standard defaults will be used.
+Package caption Info: \@makecaption = \long macro:#1#2->\ifx \@captype \@IEEEta
+blestring \footnotesize \bgroup \par \centering \@IEEEtabletopskipstrut {\norma
+lfont \footnotesize #1}\\{\normalfont \footnotesize \scshape #2}\par \addvspace
+ {0.5\baselineskip }\egroup \@IEEEtablecaptionsepspace \else \@IEEEfigurecaptio
+nsepspace \setbox \@tempboxa \hbox {\normalfont \footnotesize {#1.}\nobreakspac
+e \nobreakspace #2}\ifdim \wd \@tempboxa >\hsize \setbox \@tempboxa \hbox {\nor
+malfont \footnotesize {#1.}\nobreakspace \nobreakspace }\parbox [t]{\hsize }{\n
+ormalfont \footnotesize \noindent \unhbox \@tempboxa #2}\else \ifCLASSOPTIONcon
+ference \hbox to\hsize {\normalfont \footnotesize \hfil \box \@tempboxa \hfil }
+\else \hbox to\hsize {\normalfont \footnotesize \box \@tempboxa \hfil }\fi \fi 
+\fi  on input line 1175.
+)
+
+Package caption Warning: Unknown document class (or package),
+(caption)                standard defaults will be used.
+See the caption package documentation for explanation.
+
+\c@caption@flags=\count302
+\c@continuedfloat=\count303
+)
+Package caption Info: New subtype `subfigure' on input line 238.
+\c@subfigure=\count304
+Package caption Info: New subtype `subtable' on input line 238.
+\c@subtable=\count305
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen191
+\lightrulewidth=\dimen192
+\cmidrulewidth=\dimen193
+\belowrulesep=\dimen194
+\belowbottomsep=\dimen195
+\aboverulesep=\dimen196
+\abovetopsep=\dimen197
+\cmidrulesep=\dimen198
+\cmidrulekern=\dimen199
+\defaultaddspace=\dimen256
+\@cmidla=\count306
+\@cmidlb=\count307
+\@aboverulesep=\dimen257
+\@belowrulesep=\dimen258
+\@thisruleclass=\count308
+\@lastruleclass=\count309
+\@thisrulewidth=\dimen259
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/multirow\multirow.sty
+Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
+\multirow@colwidth=\skip55
+\multirow@cntb=\count310
+\multirow@dima=\skip56
+\bigstrutjot=\dimen260
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/base\textcomp.sty
+Package: textcomp 2024/04/24 v2.1b Standard LaTeX package
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
+Package: xcolor 2024/09/29 v3.02 LaTeX color extensions (UK)
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 274.
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1349.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1353.
+Package xcolor Info: Model `RGB' extended on input line 1365.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1367.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1370.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1371.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/pgf/frontendlayer\tikz.
+sty
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgf.sty
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfrcs.st
+y
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfutil
+-common.tex
+\pgfutil@everybye=\toks24
+\pgfutil@tempdima=\dimen261
+\pgfutil@tempdimb=\dimen262
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfutil
+-latex.def
+\pgfutil@abb=\box57
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfrcs.
+code.tex
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf\pgf.revision.tex)
+Package: pgfrcs 2025-08-29 v3.1.11a (3.1.11a)
+))
+Package: pgf 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgfcore.
+sty
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/pgf/systemlayer\pgfsys.
+sty
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+s.code.tex
+Package: pgfsys 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeys
+.code.tex
+\pgfkeys@pathtoks=\toks25
+\pgfkeys@temptoks=\toks26
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeys
+libraryfiltered.code.tex
+\pgfkeys@tmptoks=\toks27
+))
+\pgf@x=\dimen263
+\pgf@y=\dimen264
+\pgf@xa=\dimen265
+\pgf@ya=\dimen266
+\pgf@xb=\dimen267
+\pgf@yb=\dimen268
+\pgf@xc=\dimen269
+\pgf@yc=\dimen270
+\pgf@xd=\dimen271
+\pgf@yd=\dimen272
+\w@pgf@writea=\write3
+\r@pgf@reada=\read2
+\c@pgf@counta=\count311
+\c@pgf@countb=\count312
+\c@pgf@countc=\count313
+\c@pgf@countd=\count314
+\t@pgf@toka=\toks28
+\t@pgf@tokb=\toks29
+\t@pgf@tokc=\toks30
+\pgf@sys@id@count=\count315
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgf.c
+fg
+File: pgf.cfg 2025-08-29 v3.1.11a (3.1.11a)
+)
+Driver file for pgf: pgfsys-pdftex.def
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+s-pdftex.def
+File: pgfsys-pdftex.def 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+s-common-pdf.def
+File: pgfsys-common-pdf.def 2025-08-29 v3.1.11a (3.1.11a)
+)))
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+ssoftpath.code.tex
+File: pgfsyssoftpath.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfsyssoftpath@smallbuffer@items=\count316
+\pgfsyssoftpath@bigbuffer@items=\count317
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsy
+sprotocol.code.tex
+File: pgfsysprotocol.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+))
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+e.code.tex
+Package: pgfcore 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.code
+.tex
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathutil.
+code.tex)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathparse
+r.code.tex
+\pgfmath@dimen=\dimen273
+\pgfmath@count=\count318
+\pgfmath@box=\box58
+\pgfmath@toks=\toks31
+\pgfmath@stack@operand=\toks32
+\pgfmath@stack@operation=\toks33
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.code.tex)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.basic.code.tex)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.trigonometric.code.tex)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.random.code.tex)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.comparison.code.tex)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.base.code.tex)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.round.code.tex)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.misc.code.tex)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunct
+ions.integerarithmetics.code.tex)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathcalc.
+code.tex)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfloat
+.code.tex
+\c@pgfmathroundto@lastzeros=\count319
+))
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfint.code.
+tex)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epoints.code.tex
+File: pgfcorepoints.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@picminx=\dimen274
+\pgf@picmaxx=\dimen275
+\pgf@picminy=\dimen276
+\pgf@picmaxy=\dimen277
+\pgf@pathminx=\dimen278
+\pgf@pathmaxx=\dimen279
+\pgf@pathminy=\dimen280
+\pgf@pathmaxy=\dimen281
+\pgf@xx=\dimen282
+\pgf@xy=\dimen283
+\pgf@yx=\dimen284
+\pgf@yy=\dimen285
+\pgf@zx=\dimen286
+\pgf@zy=\dimen287
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epathconstruct.code.tex
+File: pgfcorepathconstruct.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@path@lastx=\dimen288
+\pgf@path@lasty=\dimen289
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epathusage.code.tex
+File: pgfcorepathusage.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@shorten@end@additional=\dimen290
+\pgf@shorten@start@additional=\dimen291
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+escopes.code.tex
+File: pgfcorescopes.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfpic=\box59
+\pgf@hbox=\box60
+\pgf@layerbox@main=\box61
+\pgf@picture@serial@count=\count320
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+egraphicstate.code.tex
+File: pgfcoregraphicstate.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgflinewidth=\dimen292
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+etransformations.code.tex
+File: pgfcoretransformations.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@pt@x=\dimen293
+\pgf@pt@y=\dimen294
+\pgf@pt@temp=\dimen295
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+equick.code.tex
+File: pgfcorequick.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+eobjects.code.tex
+File: pgfcoreobjects.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epathprocessing.code.tex
+File: pgfcorepathprocessing.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+earrows.code.tex
+File: pgfcorearrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfarrowsep=\dimen296
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+eshade.code.tex
+File: pgfcoreshade.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@max=\dimen297
+\pgf@sys@shading@range@num=\count321
+\pgf@shadingcount=\count322
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+eimage.code.tex
+File: pgfcoreimage.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+eexternal.code.tex
+File: pgfcoreexternal.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfexternal@startupbox=\box62
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+elayers.code.tex
+File: pgfcorelayers.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+etransparency.code.tex
+File: pgfcoretransparency.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+epatterns.code.tex
+File: pgfcorepatterns.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcor
+erdf.code.tex
+File: pgfcorerdf.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)))
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodule
+shapes.code.tex
+File: pgfmoduleshapes.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfnodeparttextbox=\box63
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodule
+plot.code.tex
+File: pgfmoduleplot.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfco
+mp-version-0-65.sty
+Package: pgfcomp-version-0-65 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@nodesepstart=\dimen298
+\pgf@nodesepend=\dimen299
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfco
+mp-version-1-18.sty
+Package: pgfcomp-version-1-18 2025-08-29 v3.1.11a (3.1.11a)
+))
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgffor.st
+y
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfkeys.s
+ty
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeys
+.code.tex))
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/pgf/math\pgfmath.sty
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.code
+.tex))
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgffor.
+code.tex
+Package: pgffor 2025-08-29 v3.1.11a (3.1.11a)
+\pgffor@iter=\dimen300
+\pgffor@skip=\dimen301
+\pgffor@stack=\toks34
+\pgffor@toks=\toks35
+))
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z\tikz.code.tex
+Package: tikz 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflibr
+aryplothandlers.code.tex
+File: pgflibraryplothandlers.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@plot@mark@count=\count323
+\pgfplotmarksize=\dimen302
+)
+\tikz@lastx=\dimen303
+\tikz@lasty=\dimen304
+\tikz@lastxsaved=\dimen305
+\tikz@lastysaved=\dimen306
+\tikz@lastmovetox=\dimen307
+\tikz@lastmovetoy=\dimen308
+\tikzleveldistance=\dimen309
+\tikzsiblingdistance=\dimen310
+\tikz@figbox=\box64
+\tikz@figbox@bg=\box65
+\tikz@tempbox=\box66
+\tikz@tempbox@bg=\box67
+\tikztreelevel=\count324
+\tikznumberofchildren=\count325
+\tikznumberofcurrentchild=\count326
+\tikz@fig@count=\count327
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodule
+matrix.code.tex
+File: pgfmodulematrix.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfmatrixcurrentrow=\count328
+\pgfmatrixcurrentcolumn=\count329
+\pgf@matrix@numberofcolumns=\count330
+)
+\tikz@expandcount=\count331
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)))
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflibr
+aryarrows.meta.code.tex
+File: pgflibraryarrows.meta.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfarrowinset=\dimen311
+\pgfarrowlength=\dimen312
+\pgfarrowwidth=\dimen313
+\pgfarrowlinewidth=\dimen314
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibrarypositioning.code.tex
+File: tikzlibrarypositioning.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibraryfit.code.tex
+File: tikzlibraryfit.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibrarybackgrounds.code.tex
+File: tikzlibrarybackgrounds.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@layerbox@background=\box68
+\pgf@layerboxsaved@background=\box69
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibraryshapes.symbols.code.tex
+File: tikzlibraryshapes.symbols.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries/shapes\
+pgflibraryshapes.symbols.code.tex
+File: pgflibraryshapes.symbols.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+))
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tik
+z/libraries\tikzlibrarycalc.code.tex
+File: tikzlibrarycalc.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/algorithms\algorithm.st
+y
+Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
+nment
+ (C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count332
+\float@exts=\toks36
+\float@box=\box70
+\@float@everytoks=\toks37
+\@floatcapt=\box71
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/base\ifthen.sty
+Package: ifthen 2024/03/16 v1.1e Standard LaTeX ifthen package (DPC)
+)
+\@float@every@algorithm=\toks38
+\c@algorithm=\count333
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/algorithmicx\algorithmi
+cx.sty
+Package: algorithmicx 2005/04/27 v1.2 Algorithmicx
+
+Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
+\c@ALG@line=\count334
+\c@ALG@rem=\count335
+\c@ALG@nested=\count336
+\ALG@tlm=\skip57
+\ALG@thistlm=\skip58
+\c@ALG@Lnr=\count337
+\c@ALG@blocknr=\count338
+\c@ALG@storecount=\count339
+\c@ALG@tmpcounter=\count340
+\ALG@tmplength=\skip59
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/algorithmicx\algpseudoc
+ode.sty
+Package: algpseudocode 
+
+Document Style - pseudocode environments for use with the `algorithmicx' style
+)
+\c@definition=\count341
+\c@remark=\count342
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
+tex.def
+File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count343
+) (main_paper_de.aux)
+\openout1 = `main_paper_de.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 49.
+LaTeX Font Info:    ... okay on input line 49.
+
+-- Lines per column: 58 (exact).
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
+ii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count344
+\scratchdimen=\dimen315
+\scratchbox=\box72
+\nofMPsegments=\count345
+\nofMParguments=\count346
+\everyMPshowfont=\toks39
+\MPscratchCnt=\count347
+\MPscratchDim=\dimen316
+\MPnumerator=\count348
+\makeMPintoPDFobject=\count349
+\everyMPtoPDFconversion=\toks40
+)
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-b
+ase.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.c
+fg
+File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
+))
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
+Package caption Info: End \AtBeginDocument code.
+
+Underfull \hbox (badness 10000) in paragraph at lines 61--61
+\OT1/ptm/m/n/8 En-gi-neer-ing, Con-cor-dia Uni-ver-sity, Mon-treal, QC, Canada 
+(e-mail:
+ []
+
+LaTeX Font Info:    Trying to load font information for U+msa on input line 65.
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 65.
+
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+
+LaTeX Warning: Citation `li2024impact' on page 1 undefined on input line 76.
+
+
+LaTeX Warning: Citation `iea2024' on page 1 undefined on input line 76.
+
+
+LaTeX Warning: Citation `li2024impact' on page 1 undefined on input line 76.
+
+
+LaTeX Warning: Citation `sastry2023decentralized' on page 1 undefined on input 
+line 76.
+
+
+LaTeX Warning: Citation `xing2023bilevel' on page 1 undefined on input line 76.
+
+
+
+LaTeX Warning: Citation `yu2024digital' on page 1 undefined on input line 76.
+
+
+LaTeX Warning: Citation `powell2022' on page 1 undefined on input line 76.
+
+
+LaTeX Warning: Citation `calearo2021' on page 1 undefined on input line 76.
+
+
+LaTeX Warning: Citation `li2025trc' on page 1 undefined on input line 76.
+
+(figures/sparc_framework_fig.tex)
+LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 8
+2.
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ts1ptm.fd
+File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
+)
+
+LaTeX Warning: Citation `lahariya2020' on page 1 undefined on input line 93.
+
+
+LaTeX Warning: Citation `chen2020modeling' on page 1 undefined on input line 96
+.
+
+
+LaTeX Warning: Citation `einolander2021' on page 1 undefined on input line 99.
+
+
+LaTeX Warning: Citation `einolander2022' on page 1 undefined on input line 99.
+
+
+LaTeX Warning: Citation `powell2022' on page 1 undefined on input line 102.
+
+
+LaTeX Warning: Citation `vankriekinge2023' on page 1 undefined on input line 10
+3.
+
+
+LaTeX Warning: Citation `canigueral2023assessment' on page 1 undefined on input
+ line 104.
+
+
+LaTeX Warning: Citation `helmus2022validated' on page 1 undefined on input line
+ 107.
+
+
+LaTeX Warning: Citation `zhong2026time' on page 1 undefined on input line 108.
+
+
+LaTeX Warning: Citation `li2024synthesis' on page 1 undefined on input line 111
+.
+
+
+LaTeX Warning: Citation `li2025trc' on page 1 undefined on input line 112.
+
+
+LaTeX Warning: Citation `lescrauwaet2026synthcharge' on page 1 undefined on inp
+ut line 113.
+
+
+LaTeX Warning: Citation `calearo2021' on page 1 undefined on input line 119.
+
+
+LaTeX Warning: Citation `lee2019acndata' on page 1 undefined on input line 119.
+
+
+
+LaTeX Warning: Citation `sorensen2024' on page 1 undefined on input line 119.
+
+
+LaTeX Warning: Citation `baek2024dataset' on page 1 undefined on input line 119
+.
+
+
+LaTeX Warning: Citation `lahariya2020' on page 1 undefined on input line 119.
+
+
+LaTeX Warning: Citation `einolander2021' on page 1 undefined on input line 119.
+
+
+
+LaTeX Warning: Citation `li2024synthesis' on page 1 undefined on input line 119
+.
+
+
+LaTeX Warning: Citation `ranjbar2022transactive' on page 1 undefined on input l
+ine 119.
+
+
+LaTeX Warning: Citation `hu2023multiload' on page 1 undefined on input line 119
+.
+
+
+LaTeX Warning: Citation `sobhy2025and' on page 1 undefined on input line 119.
+
+
+LaTeX Warning: Citation `sastry2023decentralized' on page 1 undefined on input 
+line 119.
+
+
+LaTeX Warning: Citation `xing2023bilevel' on page 1 undefined on input line 119
+.
+
+
+LaTeX Warning: Citation `yu2024digital' on page 1 undefined on input line 119.
+
+
+LaTeX Warning: Citation `vandermeer2024predictability' on page 1 undefined on i
+nput line 121.
+
+
+LaTeX Warning: Citation `einolander2022' on page 1 undefined on input line 121.
+
+
+
+LaTeX Warning: Citation `shepero2018' on page 1 undefined on input line 121.
+
+
+LaTeX Warning: Citation `sorensen2024' on page 1 undefined on input line 121.
+
+
+LaTeX Warning: Citation `powell2022' on page 1 undefined on input line 121.
+
+[1{C:/Users/hamza/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/ha
+mza/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}
+
+
+]
+
+LaTeX Warning: Citation `lahariya2020' on page 2 undefined on input line 123.
+
+
+LaTeX Warning: Citation `chen2020modeling' on page 2 undefined on input line 12
+3.
+
+
+LaTeX Warning: Citation `einolander2021' on page 2 undefined on input line 123.
+
+
+
+LaTeX Warning: Citation `einolander2022' on page 2 undefined on input line 123.
+
+
+
+LaTeX Warning: Citation `powell2022' on page 2 undefined on input line 123.
+
+
+LaTeX Warning: Citation `vankriekinge2023' on page 2 undefined on input line 12
+3.
+
+
+LaTeX Warning: Citation `canigueral2023assessment' on page 2 undefined on input
+ line 123.
+
+
+LaTeX Warning: Citation `li2024synthesis' on page 2 undefined on input line 123
+.
+
+
+LaTeX Warning: Citation `li2025trc' on page 2 undefined on input line 123.
+
+
+LaTeX Warning: Citation `lescrauwaet2026synthcharge' on page 2 undefined on inp
+ut line 123.
+
+
+LaTeX Warning: Citation `zhong2026time' on page 2 undefined on input line 123.
+
+
+LaTeX Warning: Citation `helmus2022validated' on page 2 undefined on input line
+ 123.
+
+
+LaTeX Warning: Citation `shepero2018' on page 2 undefined on input line 125.
+
+
+LaTeX Warning: Citation `rolink2013' on page 2 undefined on input line 125.
+
+
+LaTeX Warning: Citation `iversen2016inhomogeneous' on page 2 undefined on input
+ line 125.
+
+
+LaTeX Warning: Citation `li2024diffcharge' on page 2 undefined on input line 12
+5.
+
+
+LaTeX Warning: Citation `razghandi2023' on page 2 undefined on input line 125.
+
+
+LaTeX Warning: Citation `lin2025energydiff' on page 2 undefined on input line 1
+25.
+
+
+LaTeX Warning: Citation `hu2023multiload' on page 2 undefined on input line 125
+.
+
+
+LaTeX Warning: Citation `tang2024modeling' on page 2 undefined on input line 12
+5.
+
+
+LaTeX Warning: Citation `xiong2026llm' on page 2 undefined on input line 125.
+
+
+LaTeX Warning: Citation `wang2026identification' on page 2 undefined on input l
+ine 125.
+
+
+Underfull \vbox (badness 1178) has occurred while \output is active []
+
+
+
+LaTeX Warning: Citation `jonas2023electric' on page 2 undefined on input line 1
+27.
+
+
+Underfull \hbox (badness 2065) in paragraph at lines 131--132
+\OT1/ptm/m/n/10 open datasets, SPARC re-cov-ers the between-entity
+ []
+
+[2]
+Underfull \hbox (badness 10000) in paragraph at lines 140--141
+[]\OT1/ptm/m/n/10 The $\OML/cmm/m/it/10 i$\OT1/ptm/m/n/10 th charg-ing ses-sion
+ is the tu-ple $\OML/cmm/m/it/10 S[] \OT1/cmr/m/n/10 =
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 140--141
+\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 U[];  T[];  D[];  E[]\OT1/cmr/m/n/10 )$\OT1/p
+tm/m/n/10 : the en-tity iden-ti-fier, the plug-
+ []
+
+
+Underfull \hbox (badness 3396) in paragraph at lines 140--141
+\OT1/ptm/m/n/10 in date-time, the plug-in du-ra-tion $\OML/cmm/m/it/10 D[] > \O
+T1/cmr/m/n/10 0$ \OT1/ptm/m/n/10 (hours),
+ []
+
+
+Underfull \hbox (badness 3989) in paragraph at lines 140--141
+\OT1/ptm/m/n/10 and the de-liv-ered en-ergy $\OML/cmm/m/it/10 E[] > \OT1/cmr/m/
+n/10 0$ \OT1/ptm/m/n/10 (kWh). Its end
+ []
+
+
+Underfull \hbox (badness 1442) in paragraph at lines 140--141
+\OT1/ptm/m/n/10 time is $\OML/cmm/m/it/10 T[] \U/msa/m/n/10 , \OML/cmm/m/it/10 
+T[] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 D[]$\OT1/ptm/m/n/10 , and its ar-rival h
+our is
+ []
+
+
+LaTeX Warning: Citation `barbu2009semi' on page 3 undefined on input line 160.
+
+
+LaTeX Warning: Citation `barbu2009semi' on page 3 undefined on input line 171.
+
+
+LaTeX Warning: Citation `iversen2016inhomogeneous' on page 3 undefined on input
+ line 175.
+
+
+LaTeX Warning: Citation `helmus2022validated' on page 3 undefined on input line
+ 175.
+
+
+Underfull \hbox (badness 8170) in paragraph at lines 173--176
+[][]\OT1/ptm/m/it/10 Remark 1 (Al-ter-na-tive chains): []\OT1/ptm/m/n/10 A two-
+state chain
+ []
+
+(figures/diagram_framework.tex) (figures/diagram_stage_23.tex) [3]
+
+LaTeX Warning: Citation `lee2012algorithms' on page 4 undefined on input line 2
+64.
+
+[4]
+
+LaTeX Warning: Citation `sorensen2024' on page 5 undefined on input line 277.
+
+
+LaTeX Warning: Citation `baek2024dataset' on page 5 undefined on input line 278
+.
+
+
+LaTeX Warning: Citation `baek2024dataset' on page 5 undefined on input line 279
+.
+
+
+LaTeX Warning: Citation `lee2019acndata' on page 5 undefined on input line 280.
+
+
+
+LaTeX Warning: Citation `flammini2019' on page 5 undefined on input line 288.
+
+
+LaTeX Warning: Citation `nelsen2006introduction' on page 5 undefined on input l
+ine 348.
+
+
+LaTeX Warning: Citation `iman1982distribution' on page 5 undefined on input lin
+e 360.
+
+[5]
+
+LaTeX Warning: Citation `cai2026frechet' on page 6 undefined on input line 393.
+
+
+<figures_de/fig_marginals_grid.pdf, id=47, 514.57056pt x 314.58327pt>
+File: figures_de/fig_marginals_grid.pdf Graphic file (type pdf)
+<use figures_de/fig_marginals_grid.pdf>
+Package pdftex.def Info: figures_de/fig_marginals_grid.pdf  used on input line 
+410.
+(pdftex.def)             Requested size: 454.08252pt x 277.60695pt.
+
+LaTeX Warning: Citation `baek2024dataset' on page 6 undefined on input line 498
+.
+
+
+LaTeX Warning: Citation `sorensen2024' on page 6 undefined on input line 498.
+
+
+LaTeX Warning: Citation `lee2019acndata' on page 6 undefined on input line 498.
+
+
+[6]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 5
+06.
+
+(C:\Users\hamza\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1pcr.fd
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+Underfull \hbox (badness 10000) in paragraph at lines 506--507
+[]\OT1/ptm/m/n/10 SPARC is im-ple-mented in Ju-lia
+ []
+
+[7 <./figures_de/fig_marginals_grid.pdf>]
+<figures_de/fig_downstream_2x5.pdf, id=73, 514.54611pt x 249.1408pt>
+File: figures_de/fig_downstream_2x5.pdf Graphic file (type pdf)
+<use figures_de/fig_downstream_2x5.pdf>
+Package pdftex.def Info: figures_de/fig_downstream_2x5.pdf  used on input line 
+522.
+(pdftex.def)             Requested size: 516.0pt x 249.86626pt.
+
+
+LaTeX Warning: Citation `einolander2021' on page 8 undefined on input line 531.
+
+
+
+LaTeX Warning: Citation `li2024synthesis' on page 8 undefined on input line 531
+.
+
+
+LaTeX Warning: Citation `lahariya2020' on page 8 undefined on input line 531.
+
+
+LaTeX Warning: Citation `helmus2022validated' on page 8 undefined on input line
+ 533.
+
+[8] [9 <./figures_de/fig_downstream_2x5.pdf>]
+No file main_paper_de.bbl.
+[10
+
+] (main_paper_de.aux)
+ ***********
+LaTeX2e <2025-11-01>
+L3 programming layer <2025-12-24>
+ ***********
+
+
+LaTeX Warning: There were undefined references.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 17841 strings out of 467871
+ 362091 string characters out of 5418375
+ 799211 words of memory out of 5000000
+ 46395 multiletter control sequences out of 15000+600000
+ 670388 words of font info for 127 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 84i,11n,94p,1897b,1025s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cme
+xtra/cmbsy7.pfb><C:/Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/publi
+c/amsfonts/cm/cmbx10.pfb><C:/Users/hamza/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/public/amsfonts/cm/cmbx5.pfb><C:/Users/hamza/AppData/Local/Programs/MiKTeX/
+fonts/type1/public/amsfonts/cm/cmbx7.pfb><C:/Users/hamza/AppData/Local/Programs
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/hamza/AppData/Local
+/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/hamza/AppD
+ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi5.pfb><C:/Users/ha
+mza/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/
+Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.
+pfb><C:/Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
+m/cmmi8.pfb><C:/Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/public/am
+sfonts/cm/cmmi9.pfb><C:/Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/p
+ublic/amsfonts/cmextra/cmmib5.pfb><C:/Users/hamza/AppData/Local/Programs/MiKTeX
+/fonts/type1/public/amsfonts/cmextra/cmmib7.pfb><C:/Users/hamza/AppData/Local/P
+rograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/hamza/AppData
+/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/hamza/
+AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users
+/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C
+:/Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8
+.pfb><C:/Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
+cm/cmr9.pfb><C:/Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/public/am
+sfonts/cm/cmsy10.pfb><C:/Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmsy5.pfb><C:/Users/hamza/AppData/Local/Programs/MiKTeX/font
+s/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/hamza/AppData/Local/Programs/MiK
+TeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/hamza/AppData/Local/Prog
+rams/MiKTeX/fonts/type1/public/amsfonts/symbols/msam10.pfb><C:/Users/hamza/AppD
+ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb><C:/Us
+ers/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/
+Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/
+Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:
+/Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:
+/Users/hamza/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
+Output written on main_paper_de.pdf (10 pages, 509694 bytes).
+PDF statistics:
+ 233 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 23 words of extra memory for PDF output out of 10000 (max. 10000000)
+
